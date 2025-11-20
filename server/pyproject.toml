@@ -3,9 +3,9 @@ name = "server"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.13"
 dependencies = [
-    "fastapi>=0.121.3",
+    "fastapi[standard]>=0.121.3",
 ]
 
 [dependency-groups]
