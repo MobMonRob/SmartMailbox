@@ -9,5 +9,5 @@ router = APIRouter(
 )
 
 @router.post("/images")
-async def create_upload_file(file: UploadFile):
-    return{"filename": file.filename}
+async def upload_images(images: UploadFile):
+    return{"filename": images.filename}
