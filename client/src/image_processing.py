@@ -1,7 +1,7 @@
 import io
 import logging
 import zipfile
-from datetime import time
+from datetime import time, datetime
 from typing import  List
 import requests
 
@@ -17,7 +17,7 @@ def send_images_to_server(images: List[io.BytesIO], server_url: str):
     logger.info(f"Creating zip archive for {len(images)} images.")
 
     archive = create_zip_archive(images)
-    archive_name = f"Images_{time.strftime('%Y%m%d%H%M%S')}.zip"
+    archive_name = f"Images_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.zip"
 
     logger.info(f"Zip archive \"{archive_name}\" created.")
     logger.info(f"Sending images to server with URL \"{server_url}\".")
