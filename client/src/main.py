@@ -5,7 +5,7 @@ from client.src.image_processing import send_images_to_server
 
 logger = logging.getLogger(__name__)
 
-SERVER_URL = "http://172.16.28.103:8000/images"
+SERVER_URL = "http://localhost:8000/images"
 
 def main():
     log_file_name= "SmartMailbox.log"

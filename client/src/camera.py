@@ -14,12 +14,12 @@ def take_pictures(count: int = 10, warm_up_time: float = 2) -> List[io.BytesIO]:
     :param warm_up_time: Seconds to wait for auto-exposure/white-balance.
     :return: List of BytesIO buffers containing JPEG data.
     """
-    logger.info("Initiating camera")
+    logger.info("Initiating camera.")
     picam2 = Picamera2()
-    logger.info("Camera initiated")
+    logger.info("Camera initiated.")
 
     picam2.start()
-    logger.info("Camera started")
+    logger.info("Camera started.")
 
     image_buffers: List[io.BytesIO] =[]
 
@@ -41,11 +41,11 @@ def take_pictures(count: int = 10, warm_up_time: float = 2) -> List[io.BytesIO]:
         duration = time.time() - start_time
         fps = count / duration
 
-        logger.info(f"Captured {count} images in {duration:.2f}s ({fps:.2f} FPS)")
+        logger.info(f"Captured {count} images in {duration:.2f}s ({fps:.2f} FPS).")
     except Exception as e:
         logger.error(f"Camera Error: {e}", exc_info=True)
     finally:
         picam2.stop()
-        logger.info("Camera stopped")
+        logger.info("Camera stopped.")
 
     return image_buffers
