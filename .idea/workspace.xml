@@ -4,16 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0bd96bf-5927-48b8-b608-8118dbb61229" name="Changes" comment="updated endpoint name">
-      <change afterPath="$PROJECT_DIR$/server/tests/test_images.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/SmartMailbox.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SmartMailbox.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="d0bd96bf-5927-48b8-b608-8118dbb61229" name="Changes" comment="Implement zip image upload and add tests&#10;&#10;- Update `upload_images` router to handle zip extraction with security checks against Zip Slip.&#10;- Remove unused `dependencies.py` and `get_token` dependency.&#10;- Add `pytest` dependency and `test_images.py` covering upload scenarios.">
+      <change afterPath="$PROJECT_DIR$/server/app/processing/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/app/processing/uploaded_images.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/app/dependencies.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/server/app/routers/images.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/app/routers/images.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/server/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/server/uv.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +17,13 @@
   </component>
   <component name="EmbeddingIndexingInfo">
     <option name="cachedIndexableFilesCount" value="55" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
     <envs>
@@ -128,7 +130,7 @@
       <workItem from="1771243759598" duration="287000" />
       <workItem from="1771244844153" duration="257000" />
       <workItem from="1771245123786" duration="451000" />
-      <workItem from="1771245596938" duration="2335000" />
+      <workItem from="1771245596938" duration="2985000" />
     </task>
     <task id="LOCAL-00001" summary="added .idea to .gitignore">
       <option name="closed" value="true" />
@@ -146,16 +148,36 @@
       <option name="project" value="LOCAL" />
       <updated>1763648911167</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Implement zip image upload and add tests&#10;&#10;- Update `upload_images` router to handle zip extraction with security checks against Zip Slip.&#10;- Remove unused `dependencies.py` and `get_token` dependency.&#10;- Add `pytest` dependency and `test_images.py` covering upload scenarios.">
+      <option name="closed" value="true" />
+      <created>1771247991264</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1771247991264</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="added .idea to .gitignore" />
     <MESSAGE value="updated endpoint name" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated endpoint name" />
+    <MESSAGE value="Implement zip image upload and add tests&#10;&#10;- Update `upload_images` router to handle zip extraction with security checks against Zip Slip.&#10;- Remove unused `dependencies.py` and `get_token` dependency.&#10;- Add `pytest` dependency and `test_images.py` covering upload scenarios." />
+    <option name="LAST_COMMIT_MESSAGE" value="Implement zip image upload and add tests&#10;&#10;- Update `upload_images` router to handle zip extraction with security checks against Zip Slip.&#10;- Remove unused `dependencies.py` and `get_token` dependency.&#10;- Add `pytest` dependency and `test_images.py` covering upload scenarios." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/SmartMailbox$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1763648761434" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/client/src" />
