@@ -17,13 +17,13 @@ def send_images_to_server(images: List[io.BytesIO], server_url: str):
     logger.info(f"Creating zip archive for {len(images)} images.")
 
     archive = create_zip_archive(images)
-    archive_name = f"Images_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.zip"
+    archive_name = f"images_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.zip"
 
     logger.info(f"Zip archive \"{archive_name}\" created.")
     logger.info(f"Sending images to server with URL \"{server_url}\".")
 
-    response = requests.post(server_url, files={"images": (archive_name, archive)})
-    logger.info(f"Server response: {response.status_code, response.reason, response.text}")
+    response = requests.post(server_url, files={"images": (archive_name, archive)}) # TODO: Maybe change "images" to be configurable, this may need a change on the server side
+    logger.info(f"Server response: {response.status_code, response.reason, response.text}") # TODO: React to server response
 
 
 def create_zip_archive(buffers: List[io.BytesIO]) -> io.BytesIO:
