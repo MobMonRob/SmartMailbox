@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0bd96bf-5927-48b8-b608-8118dbb61229" name="Changes" comment="Implement zip image upload and add tests&#10;&#10;- Update `upload_images` router to handle zip extraction with security checks against Zip Slip.&#10;- Remove unused `dependencies.py` and `get_token` dependency.&#10;- Add `pytest` dependency and `test_images.py` covering upload scenarios.">
-      <change afterPath="$PROJECT_DIR$/server/app/processing/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/app/processing/uploaded_images.py" afterDir="false" />
+    <list default="true" id="d0bd96bf-5927-48b8-b608-8118dbb61229" name="Changes" comment="Refactor image upload logic to separate module&#10;&#10;Moved zip extraction and processing logic from `routers/images.py` to a new dedicated module `processing/uploaded_images.py`. Updated the images router to delegate to the new function and cleaned up unused imports. Created `processing` package.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/app/routers/images.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/app/routers/images.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/app/processing/uploaded_images.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/app/processing/uploaded_images.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,7 +14,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="55" />
+    <option name="cachedIndexableFilesCount" value="57" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -39,6 +37,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "A1cey"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/MobMonRob/SmartMailbox.git",
+    "accountId": "d43bac16-1b22-429a-9fb4-1bdcb9e9916c"
+  }
+}]]></component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
@@ -130,7 +140,8 @@
       <workItem from="1771243759598" duration="287000" />
       <workItem from="1771244844153" duration="257000" />
       <workItem from="1771245123786" duration="451000" />
-      <workItem from="1771245596938" duration="2985000" />
+      <workItem from="1771245596938" duration="3285000" />
+      <workItem from="1771490286079" duration="925000" />
     </task>
     <task id="LOCAL-00001" summary="added .idea to .gitignore">
       <option name="closed" value="true" />
@@ -156,7 +167,15 @@
       <option name="project" value="LOCAL" />
       <updated>1771247991264</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Refactor image upload logic to separate module&#10;&#10;Moved zip extraction and processing logic from `routers/images.py` to a new dedicated module `processing/uploaded_images.py`. Updated the images router to delegate to the new function and cleaned up unused imports. Created `processing` package.">
+      <option name="closed" value="true" />
+      <created>1771248882502</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1771248882502</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -177,7 +196,8 @@
     <MESSAGE value="added .idea to .gitignore" />
     <MESSAGE value="updated endpoint name" />
     <MESSAGE value="Implement zip image upload and add tests&#10;&#10;- Update `upload_images` router to handle zip extraction with security checks against Zip Slip.&#10;- Remove unused `dependencies.py` and `get_token` dependency.&#10;- Add `pytest` dependency and `test_images.py` covering upload scenarios." />
-    <option name="LAST_COMMIT_MESSAGE" value="Implement zip image upload and add tests&#10;&#10;- Update `upload_images` router to handle zip extraction with security checks against Zip Slip.&#10;- Remove unused `dependencies.py` and `get_token` dependency.&#10;- Add `pytest` dependency and `test_images.py` covering upload scenarios." />
+    <MESSAGE value="Refactor image upload logic to separate module&#10;&#10;Moved zip extraction and processing logic from `routers/images.py` to a new dedicated module `processing/uploaded_images.py`. Updated the images router to delegate to the new function and cleaned up unused imports. Created `processing` package." />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor image upload logic to separate module&#10;&#10;Moved zip extraction and processing logic from `routers/images.py` to a new dedicated module `processing/uploaded_images.py`. Updated the images router to delegate to the new function and cleaned up unused imports. Created `processing` package." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/SmartMailbox$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1763648761434" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/client/src" />

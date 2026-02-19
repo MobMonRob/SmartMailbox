@@ -8,7 +8,7 @@ import os
 
 logger = logging.getLogger(__name__)
 
-# TODO: Define uploaded JSON (curr: { "images": <zipfile> })
+# TODO: Define uploaded JSON format (curr: { "images": <zipfile> })
 def process_uploaded_images(images: UploadFile) -> dict:
     if not images.filename.endswith(".zip"):
         raise HTTPException(status_code=400, detail="File must be a zip archive")
@@ -28,17 +28,23 @@ def process_uploaded_images(images: UploadFile) -> dict:
 
             processed_files: List[str] = []
             for file_name in file_names:
+                # TODO: Maybe replace all this by just extracting the filename directly.
+                #       As directories should not be part of the name anyway.
+                #       Example: "abcd.png" => "abcd.png", "ab/cde.png" => "cde.png"
+                #       This also prevents Zip Slip attacks
+
                 # Prevent Zip Slip
                 target_path = os.path.join(upload_dir, file_name)
-                # Normalize path to resolve ../
+                # Normalize path to resolve "../"
                 target_path = os.path.normpath(target_path)
 
+                # Skip path traversal attacks
                 if not os.path.abspath(target_path).startswith(os.path.abspath(upload_dir)):
                     logger.warning(f"Skipping suspicious file: {file_name}")
                     continue
 
                 # Extract manually to the sanitized path
-                # We only extract if it's not a directory
+                # Only extract if it's not a directory
                 if not file_name.endswith('/'):
                     os.makedirs(os.path.dirname(target_path), exist_ok=True)
                     with zip_ref.open(file_name) as source, open(target_path, "wb") as target:
@@ -47,7 +53,7 @@ def process_uploaded_images(images: UploadFile) -> dict:
                     processed_files.append(file_name)
                     logger.info(f"Extracted: {file_name}")
 
-            # TODO: Define returned JSON
+            # TODO: Define returned JSON format
             return {
                 "filename": images.filename,
                 "message": "Images received and processed",
