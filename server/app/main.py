@@ -1,16 +1,9 @@
 from fastapi import FastAPI, Depends
-from .routers import images
-from .internal import admin
+from server.app.routers import images
+import uvicorn
 
 app = FastAPI()
-
 app.include_router(images.router)
-app.include_router(
-    admin.router,
-    tags= ["admin"],
-    responses={418: {"description": "I'm a teapot"}},
-)
 
-@app.get("/")
-async def root():
-    return {"message": "Hello Bigger Applications!"}
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

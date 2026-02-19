@@ -1,0 +1,3 @@
+
+def process_images(dir_path: str):
+    ...
