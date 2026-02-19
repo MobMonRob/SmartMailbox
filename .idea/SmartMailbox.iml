@@ -4,6 +4,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/server/.venv" />
     </content>
+    <content url="file://$MODULE_DIR$/server/.venv" />
     <orderEntry type="jdk" jdkName="Python 3.13 (SmartMailbox)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

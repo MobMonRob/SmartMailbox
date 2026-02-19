@@ -1,14 +1,15 @@
 from fastapi import UploadFile, APIRouter, BackgroundTasks
 import logging
 
-from server.app.processing.process_zipfile import process_zipfile
+from ..processing.process_zipfile import process_zipfile
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
-    tags= ["images"],
+    tags=["images"],
     responses={404: {"description": "Not found"}},
 )
+
 
 @router.post("/images")
 def upload_images(images: UploadFile, background_tasks: BackgroundTasks):

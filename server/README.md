@@ -2,6 +2,18 @@
 
 Server code for the thesis.
 
+# Run
+
+## Dev
+
+In sever directory run:
+```sh 
+uvicorn app.main:app --reload
+OR
+python -m app.main
+```
+
+
 # Database
 
 ## Configuration
