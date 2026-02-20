@@ -4,6 +4,7 @@ import zipfile
 from datetime import time, datetime
 from typing import  List
 import requests
+from config import cfg
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ def send_images_to_server(images: List[io.BytesIO], server_url: str):
     logger.info(f"Creating zip archive for {len(images)} images.")
 
     archive = create_zip_archive(images)
-    archive_name = f"images_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.zip"
+    archive_name = f"{cfg.archive_name_prefix}_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.zip"
 
     logger.info(f"Zip archive \"{archive_name}\" created.")
     logger.info(f"Sending images to server with URL \"{server_url}\".")
@@ -36,7 +37,7 @@ def create_zip_archive(buffers: List[io.BytesIO]) -> io.BytesIO:
     archive = io.BytesIO()
     with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as zip:
         for num, buffer in enumerate(buffers):
-            image_name = f"image_{num}.jpg"
+            image_name = f"{cfg.image_name_prefix}_{num}.{cfg.image_format}"
 
             zip.writestr(image_name, buffer.getvalue())
             logger.info(f"Added {image_name} to archive.")
