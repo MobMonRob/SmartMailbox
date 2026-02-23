@@ -7,6 +7,7 @@ from config import cfg
 
 logger = logging.getLogger(__name__)
 
+
 def take_pictures(warm_up_time: float = 2) -> List[io.BytesIO]:
     """
     Captures a burst of images directly to in-memory buffers.
@@ -22,7 +23,7 @@ def take_pictures(warm_up_time: float = 2) -> List[io.BytesIO]:
     picam2.start()
     logger.info("Camera started.")
 
-    image_buffers: List[io.BytesIO] =[]
+    image_buffers: List[io.BytesIO] = []
 
     count = cfg.number_of_images
 
