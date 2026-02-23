@@ -19,39 +19,63 @@ python -m app.main
 ## Configuration
 
 ## Recipients
-- id (Int)
+- id (Int, key)
 - firstname (Text)
 - middlename (Text)
 - surname (Text)
 - title (Text)
+- email (Text | NULL (household email is used))
+- household (Int, foreign key -> Households)
+
+## Households
+- id (Int, key)
+- email (Text) # default if failed match
 - country (Text)
 - zipcode (Text)
 - city (Text)
 - street (Text)
 - house_number (Text)
-- email (Text)
-- household (Int)
-
-## Household
-- id (Int)
-- email (Text) # default if failed match
 
 ## ModelTestResults
 - (index)
-- model (Qwen3 | TesseractOllama)
 - start_time (Timestamp)
 - tesseract_middle_time (Timestamp | Null)
 - end_time (Timestamp)
-- match_found (Bool)
-- correct_answer (Bool)
-- test_id (Int)
+- match_found ("SUCCESS" | "FAIL")
+- correct_answer (Bool) # all found recipient ids match all recipient ids for the test_case in the TestRecipientSolutions table
+- test_id (Int, foreign key -> ModelTests.id)
 - complete_response (Text)
 
 ## ModelTests
-- id (Int)
-- image_paths (Text[])
-- correct_recipient_ids (Int[])
+- id (Int, key)
+- model (Int, foreign key -> Models.id)
+- test_case_id (Int, foreign key -> TestCases.id)
 
-## (Images)
-- id (Int ordered)
-- path (Text) / image (BLOB)
+## Models
+- id (Int, key)
+- name (Text) # llama-maverick, llama-scout, qwen3-vl:8b(/4b/32b), qwen3-vl:8b-thinking
+- family ("Qwen3" | "Llama")
+
+## TestCases
+- id (Int, key)
+- letter_id (Int, foreign key -> Letters.id)
+- image_selection ("ALL" | "PERFECT" |  "SLIGHTLY_BLURRED" | "FLASH_VISIBLE" | "VERY_BLURRED" | "CUT_OFF")
+- household_id (Int, foreign key)
+
+## Prompts
+- (index)
+- model ("Qwen3" | "Llama", foreign key -> Models.family)
+- prompt (Text)
+
+## TestRecipientSolutions
+- test_case_id (Int, foreign key, not unique)
+- recipient_id (Int, foreign key, not unique)
+
+## Letters
+- id (Int, key)
+ 
+## LetterQuality
+- (index)
+- letter_id (Int, foreign key -> Letters.id)
+- quality ("PERFECT" | "SLIGHTLY_BLURRED" | "FLASH_VISIBLE" | "VERY_BLURRED" | "CUT_OFF")
+- image_path (Text)
