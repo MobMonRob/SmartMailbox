@@ -38,9 +38,9 @@ python -m app.main
 
 ## ModelTestResults
 - (index)
-- start_time (Timestamp)
-- tesseract_middle_time (Timestamp | Null)
-- end_time (Timestamp)
+- time (Real)
+- tesseract_time (Real | NULL)
+- llama_time (Real | NULL)
 - match_found ("SUCCESS" | "FAIL")
 - correct_answer (Bool) # all found recipient ids match all recipient ids for the test_case in the TestRecipientSolutions table
 - test_id (Int, foreign key -> ModelTests.id)

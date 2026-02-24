@@ -1,5 +1,49 @@
 import sqlite3
 import os
+from enum import Enum
+from typing import List
+from server.app.db.model import Household, Recipient
+
+
+class ImageSelection(Enum):
+    ALL = "ALL"
+    PERFECT = "PERFECT"
+    SLIGHTLY_BLURRED = "SLIGHTLY_BLURRED"
+    FLASH_VISIBLE = "FLASH_VISIBLE"
+    VERY_BLURRED = "VERY_BLURRED"
+    CUT_OFF = "CUT_OFF"
+
+
+class ImageQuality(Enum):
+    PERFECT = "PERFECT"
+    SLIGHTLY_BLURRED = "SLIGHTLY_BLURRED"
+    FLASH_VISIBLE = "FLASH_VISIBLE"
+    VERY_BLURRED = "VERY_BLURRED"
+    CUT_OFF = "CUT_OFF"
+
+
+class TestCase:
+    id: int
+    letter_id: int
+    image_selection: ImageSelection
+    household_id: int
+
+
+class ModelFamily(Enum):
+    Qwen3 = "Qwen3"
+    Llama = "Llama"
+
+
+class Model:
+    id: int
+    name: str
+    family: ModelFamily
+
+
+class Timings:
+    time: float
+    tesseract_time: float | None = None
+    llama_time: float | None = None
 
 
 class Database:
@@ -24,7 +68,7 @@ class Database:
 db = Database()
 
 
-def get_image_path(letter_id: int, quality: str) -> str | None:
+def get_image_path(letter_id: int, quality: ImageQuality) -> str | None:
     """
     Returns the path of the letter in the specified quality.
 
@@ -36,7 +80,7 @@ def get_image_path(letter_id: int, quality: str) -> str | None:
 
     return db.con.execute(
         "select image_path from letter_quality where letter_id = ? and quality = ?",
-        [letter_id, quality],
+        [letter_id, quality.value],
     ).fetchone()
 
 
@@ -47,4 +91,53 @@ def get_prompt(model_family: str) -> str:
     :param model_family: The model family: 'Qwen3' | 'Llama'.
     :return: The prompt for the model family.
     """
-    return db.con.execute()
+    return db.con.execute().fetchone()
+
+
+def get_household(household_id: int) -> Household:
+    """
+    Returns the household with the given id.
+
+    :param household_id: The id of the household.
+    :return: The household data.
+    """
+
+    household = db.con.execute(
+        "select * from households where id = ?", [household_id]
+    ).fetchone()
+
+    return Household(
+        id=household["id"],
+        email=household["email"],
+        country=household["country"],
+        zipcode=household["zipcode"],
+        city=household["city"],
+        street=household["street"],
+        house_number=household["house_number"],
+    )
+
+
+def get_all_recipients(household_id: int) -> List[Recipient]:
+    """
+    Returns all recipients for the given household.
+
+    :param household_id: The id of the household.
+    :return: A list of all the recipients.
+    """
+
+    recipients = db.con.execute(
+        "select * from recipients where household = ?", [household_id]
+    ).fetchall()
+
+    return [
+        Recipient(
+            id=recipient["id"],
+            firstname=recipient["firstname"],
+            middlename=recipient["middlename"],
+            surname=recipient["surname"],
+            title=recipient["title"],
+            email=recipient["email"],
+            household=recipient["household"],
+        )
+        for recipient in recipients
+    ]
