@@ -2,8 +2,15 @@ from typing import List, Tuple
 
 from ollama import ChatResponse
 
-from .db.api import get_image_path, get_all_recipients, get_household, create_model, get_test_cases, store_test_result, \
-    get_solution_recipient_ids
+from .db.api import (
+    get_image_path,
+    get_all_recipients,
+    get_household,
+    create_model,
+    get_test_cases,
+    store_test_result,
+    get_solution_recipient_ids,
+)
 
 from .db.model import (
     Model,
@@ -13,7 +20,8 @@ from .db.model import (
     TestCase,
     Timings,
     CompleteRecipientData,
-    create_complete_recipient_data, TestResult,
+    create_complete_recipient_data,
+    TestResult,
 )
 
 from . import qwen3, tesseract_llama
@@ -101,6 +109,7 @@ def get_recipients_data(household_id: int) -> List[CompleteRecipientData]:
         create_complete_recipient_data(recipient, household) for recipient in recipients
     ]
 
+
 # TODO: improve this code to match the json response format of the model
 def check_response(response: ChatResponse, test_case: TestCase) -> Tuple[bool, bool]:
     """
@@ -136,7 +145,7 @@ def check_response(response: ChatResponse, test_case: TestCase) -> Tuple[bool, b
     raise Exception(f"Invalid response format: {message}")
 
 
-def get_recipient_id_list_from_response(message: str)-> List[int]:
+def get_recipient_id_list_from_response(message: str) -> List[int]:
     """
     Get the recipient ids from the string array in the models response.
 
@@ -146,9 +155,15 @@ def get_recipient_id_list_from_response(message: str)-> List[int]:
     :return: The list of recipient ids
     """
 
-    return [int(recipient_id) for recipient_id in message.removeprefix("[").removesuffix("]").split(",")]
+    return [
+        int(recipient_id)
+        for recipient_id in message.removeprefix("[").removesuffix("]").split(",")
+    ]
 
-def match_response_against_solution(recipient_ids: List[int], test_case_id: int) -> bool:
+
+def match_response_against_solution(
+    recipient_ids: List[int], test_case_id: int
+) -> bool:
     """
     Check if the ids in the response matches the solution.
 
@@ -158,13 +173,9 @@ def match_response_against_solution(recipient_ids: List[int], test_case_id: int)
     correct_ids = get_solution_recipient_ids(test_case_id)
 
     if len(correct_ids) != len(recipient_ids):
-        return  False
+        return False
 
     recipient_ids.sort()
     correct_ids.sort()
 
     return recipient_ids == correct_ids
-
-
-
-

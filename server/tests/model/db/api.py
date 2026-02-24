@@ -1,7 +1,15 @@
 import sqlite3
 import os
 from typing import List
-from .model import Household, Recipient, ImageQuality, Model, ModelFamily, TestCase, TestResult
+from .model import (
+    Household,
+    Recipient,
+    ImageQuality,
+    Model,
+    ModelFamily,
+    TestCase,
+    TestResult,
+)
 
 
 class Database:
@@ -167,7 +175,8 @@ def store_test_result(test_result: TestResult):
     :param test_result: The test result to store.
     """
     db.con.execute(
-        "insert into model_test_results (time, tesseract_time, llama_time, match_found, correct_answer, test_id, complete_response) values (?,?,?,?,?,?,?)",[
+        "insert into model_test_results (time, tesseract_time, llama_time, match_found, correct_answer, test_id, complete_response) values (?,?,?,?,?,?,?)",
+        [
             test_result.time,
             test_result.tesseract_time,
             test_result.llama_time,
@@ -175,8 +184,9 @@ def store_test_result(test_result: TestResult):
             test_result.correct_answer,
             test_result.test_id,
             test_result.complete_response,
-        ]
+        ],
     )
+
 
 def get_solution_recipient_ids(test_case_id: int) -> List[int]:
     """
@@ -187,7 +197,7 @@ def get_solution_recipient_ids(test_case_id: int) -> List[int]:
     """
     ids = db.con.execute(
         "select recipient_id from test_recipient_solutions where test_case_id = ?",
-        [test_case_id]
+        [test_case_id],
     ).fetchall()
 
-    return    [int(recipient_id) for recipient_id in ids]
+    return [int(recipient_id) for recipient_id in ids]
