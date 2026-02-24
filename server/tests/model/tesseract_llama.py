@@ -4,8 +4,8 @@ import ollama
 import pytesseract
 from ollama import ChatResponse
 
-from server.app.db.model import CompleteRecipientData
-from server.tests.db import get_prompt, Timings
+from .db.model import Timings, CompleteRecipientData
+from .db.api import get_prompt
 
 
 def test(
@@ -37,7 +37,9 @@ def test(
 
     tesseract_end_time = time.time()
 
-    prompt += f"{recipients_data}\n{extracted_text}"
+    prompt += "\n".join(str(recipient) for recipient in recipients_data)
+
+    prompt += f"\n{extracted_text}"
 
     llama_start_time = time.time()
 
@@ -48,9 +50,8 @@ def test(
 
     llama_end_time = time.time()
 
-    timings = Timings()
-    timings.tesseract_time = tesseract_end_time - tesseract_start_time
-    timings.llama_time = llama_end_time - llama_start_time
-    timings.time = timings.tesseract_time + timings.llama_time
+    tesseract_time = tesseract_end_time - tesseract_start_time
+    llama_time = llama_end_time - llama_start_time
+    combined_time = tesseract_time + llama_time
 
-    return response, timings
+    return response, Timings(combined_time, tesseract_time, llama_time)

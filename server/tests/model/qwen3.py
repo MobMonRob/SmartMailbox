@@ -3,8 +3,8 @@ from typing import List, Tuple
 import ollama
 from ollama import ChatResponse
 
-from server.app.db.model import CompleteRecipientData
-from server.tests.db import get_prompt, Timings
+from .db.api import get_prompt
+from .db.model import Timings, CompleteRecipientData
 
 
 def test(
@@ -22,7 +22,7 @@ def test(
 
     prompt = get_prompt(model_family="Qwen3")
 
-    prompt += recipients_data
+    prompt += "\n".join(str(recipient) for recipient in recipients_data)
 
     start_time = time.time()
 
@@ -33,7 +33,4 @@ def test(
 
     end_time = time.time()
 
-    timings = Timings()
-    timings.time = end_time - start_time
-
-    return response, timings
+    return response, Timings(end_time - start_time)

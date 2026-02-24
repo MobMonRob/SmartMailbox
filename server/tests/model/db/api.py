@@ -1,60 +1,18 @@
 import sqlite3
 import os
-from enum import Enum
 from typing import List
-from server.app.db.model import Household, Recipient
-
-
-class ImageSelection(Enum):
-    ALL = "ALL"
-    PERFECT = "PERFECT"
-    SLIGHTLY_BLURRED = "SLIGHTLY_BLURRED"
-    FLASH_VISIBLE = "FLASH_VISIBLE"
-    VERY_BLURRED = "VERY_BLURRED"
-    CUT_OFF = "CUT_OFF"
-
-
-class ImageQuality(Enum):
-    PERFECT = "PERFECT"
-    SLIGHTLY_BLURRED = "SLIGHTLY_BLURRED"
-    FLASH_VISIBLE = "FLASH_VISIBLE"
-    VERY_BLURRED = "VERY_BLURRED"
-    CUT_OFF = "CUT_OFF"
-
-
-class TestCase:
-    id: int
-    letter_id: int
-    image_selection: ImageSelection
-    household_id: int
-
-
-class ModelFamily(Enum):
-    Qwen3 = "Qwen3"
-    Llama = "Llama"
-
-
-class Model:
-    id: int
-    name: str
-    family: ModelFamily
-
-
-class Timings:
-    time: float
-    tesseract_time: float | None = None
-    llama_time: float | None = None
+from .model import Household, Recipient, ImageQuality
 
 
 class Database:
     _instance = None
-    con = None
+    con: sqlite3.Connection
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super().__new__(cls, *args, **kwargs)
             base_dir = os.path.dirname(os.path.abspath(__file__))
-            db_path = os.path.join(base_dir, "../app/db/database.db")
+            db_path = os.path.join(base_dir, "../../../app/db/database.db")
 
             cls.con = sqlite3.connect(db_path)
 
@@ -91,7 +49,9 @@ def get_prompt(model_family: str) -> str:
     :param model_family: The model family: 'Qwen3' | 'Llama'.
     :return: The prompt for the model family.
     """
-    return db.con.execute().fetchone()
+    return db.con.execute(
+        "select prompt from prompts where model = ?", [model_family]
+    ).fetchone()
 
 
 def get_household(household_id: int) -> Household:

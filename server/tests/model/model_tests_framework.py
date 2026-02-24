@@ -1,28 +1,21 @@
-from enum import Enum
 from typing import List, Tuple
 
 from ollama import ChatResponse
 
-from db import get_image_path, get_prompt
-from server.app.db.model import CompleteRecipientData, create_complete_recipient_data
-from server.tests.db import (
+from .db.api import get_image_path, get_all_recipients, get_household
+
+from .db.model import (
     Model,
     ImageSelection,
     ImageQuality,
     ModelFamily,
     TestCase,
-    get_household,
-    get_all_recipients,
     Timings,
+    CompleteRecipientData,
+    create_complete_recipient_data,
 )
-import qwen3
-import tesseract_llama
 
-
-def main():
-    ...
-
-
+from . import qwen3, tesseract_llama
 
 
 def run_test_case(model: Model, test_case: TestCase) -> Tuple[ChatResponse, Timings]:

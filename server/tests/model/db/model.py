@@ -1,5 +1,50 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import Optional
+
+
+class ImageSelection(Enum):
+    ALL = "ALL"
+    PERFECT = "PERFECT"
+    SLIGHTLY_BLURRED = "SLIGHTLY_BLURRED"
+    FLASH_VISIBLE = "FLASH_VISIBLE"
+    VERY_BLURRED = "VERY_BLURRED"
+    CUT_OFF = "CUT_OFF"
+
+
+class ImageQuality(Enum):
+    PERFECT = "PERFECT"
+    SLIGHTLY_BLURRED = "SLIGHTLY_BLURRED"
+    FLASH_VISIBLE = "FLASH_VISIBLE"
+    VERY_BLURRED = "VERY_BLURRED"
+    CUT_OFF = "CUT_OFF"
+
+
+@dataclass
+class TestCase:
+    id: int
+    letter_id: int
+    image_selection: ImageSelection
+    household_id: int
+
+
+class ModelFamily(Enum):
+    Qwen3 = "Qwen3"
+    Llama = "Llama"
+
+
+@dataclass
+class Model:
+    id: int
+    name: str
+    family: ModelFamily
+
+
+@dataclass
+class Timings:
+    time: float
+    tesseract_time: float | None = None
+    llama_time: float | None = None
 
 
 @dataclass
