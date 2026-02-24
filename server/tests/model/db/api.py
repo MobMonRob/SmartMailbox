@@ -3,7 +3,6 @@ import os
 from typing import List
 from .model import Household, Recipient, ImageQuality
 
-
 class Database:
     _instance = None
     con: sqlite3.Connection
