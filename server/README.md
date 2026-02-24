@@ -23,14 +23,15 @@ python -m app.main
 
 ### Returns
 
-#### SUCCESS 
-- number of best image
-- ID of best user match or multiple IDs 
-- message for user about mail details
-
-#### FAIL 
-- literal "FAIL"
-- reason for failure # TODO for each household a default mail for failed operations
+```json
+{
+  "code": string, // "SUCCESS" | "FAIL"
+  "ids": [], // Comma-separated List of matched IDs: [1,2,3]
+  "fail_reason": string, // reason for failure 
+  "best_image_id": int,
+  "mail_content": string // message for user about mail details
+}
+```
 
 #### Definition SUCCESS vs FAIL
 

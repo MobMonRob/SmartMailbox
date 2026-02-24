@@ -27,6 +27,15 @@ class TestCase:
     image_selection: ImageSelection
     household_id: int
 
+@dataclass
+class TestResult:
+    time: float
+    tesseract_time: float | None = None
+    llama_time: float | None = None
+    match_found: bool
+    correct_answer: bool
+    test_id: int
+    complete_response: str
 
 class ModelFamily(Enum):
     Qwen3 = "Qwen3"

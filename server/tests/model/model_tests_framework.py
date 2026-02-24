@@ -2,7 +2,8 @@ from typing import List, Tuple
 
 from ollama import ChatResponse
 
-from .db.api import get_image_path, get_all_recipients, get_household
+from .db.api import get_image_path, get_all_recipients, get_household, create_model, get_test_cases, store_test_result, \
+    get_solution_recipient_ids
 
 from .db.model import (
     Model,
@@ -12,10 +13,33 @@ from .db.model import (
     TestCase,
     Timings,
     CompleteRecipientData,
-    create_complete_recipient_data,
+    create_complete_recipient_data, TestResult,
 )
 
 from . import qwen3, tesseract_llama
+
+
+def run_tests(model_name: str):
+    model = create_model(model_name)
+
+    test_cases = get_test_cases()
+
+    for test_case in test_cases:
+        response, timings = run_test_case(model, test_case)
+
+        match_found, correct_answer = check_response(response, test_case)
+
+        test_result = TestResult(
+            time=timings.time,
+            tesseract_time=timings.tesseract_time,
+            llama_time=timings.llama_time,
+            match_found=match_found,
+            correct_answer=correct_answer,
+            test_id=test_case.id,
+            complete_response=response.message.content,
+        )
+
+        store_test_result(test_result)
 
 
 def run_test_case(model: Model, test_case: TestCase) -> Tuple[ChatResponse, Timings]:
@@ -76,3 +100,71 @@ def get_recipients_data(household_id: int) -> List[CompleteRecipientData]:
     return [
         create_complete_recipient_data(recipient, household) for recipient in recipients
     ]
+
+# TODO: improve this code to match the json response format of the model
+def check_response(response: ChatResponse, test_case: TestCase) -> Tuple[bool, bool]:
+    """
+    Checks the models response against the test case.
+
+    :param response: The response from the model.
+    :param test_case: The test case to use.
+    :return: Tuple of bools consisting of match_found and correct_answer.
+    """
+    message = response.message.content
+
+    if message.startswith("SUCCESS"):
+        match_found = True
+        message = message.removeprefix("SUCCESS;")
+
+        recipient_ids = get_recipient_id_list_from_response(message)
+
+        if match_found and len(recipient_ids) == 0:
+            raise Exception(f"Successful match but no recipient ids found {message}")
+
+        correct_answer = match_response_against_solution(recipient_ids, test_case.id)
+
+        return match_found, correct_answer
+
+    if message.startswith("FAIL"):
+        match_found = False
+
+        correct_ids = get_solution_recipient_ids(test_case.id)
+        correct_answer = len(correct_ids) == 0
+
+        return match_found, correct_answer
+
+    raise Exception(f"Invalid response format: {message}")
+
+
+def get_recipient_id_list_from_response(message: str)-> List[int]:
+    """
+    Get the recipient ids from the string array in the models response.
+
+    **Example**: '[1,2,3]' => [1, 2, 3]
+
+    :param message: The response message
+    :return: The list of recipient ids
+    """
+
+    return [int(recipient_id) for recipient_id in message.removeprefix("[").removesuffix("]").split(",")]
+
+def match_response_against_solution(recipient_ids: List[int], test_case_id: int) -> bool:
+    """
+    Check if the ids in the response matches the solution.
+
+    :param
+
+    """
+    correct_ids = get_solution_recipient_ids(test_case_id)
+
+    if len(correct_ids) != len(recipient_ids):
+        return  False
+
+    recipient_ids.sort()
+    correct_ids.sort()
+
+    return recipient_ids == correct_ids
+
+
+
+
