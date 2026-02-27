@@ -1,7 +1,8 @@
 import sys
 
 from .model_tests_framework import run_tests
-
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 def main():
     """
@@ -10,7 +11,9 @@ def main():
 
     **Example**: python -m tests.model.main llama4
     """
-    model = sys.argv[0]
+    model = sys.argv[1]
+
+    print(model)
     run_tests(model)
 
 

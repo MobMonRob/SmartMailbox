@@ -26,12 +26,19 @@ from .db.model import (
 
 from . import qwen3, tesseract_llama
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def run_tests(model_name: str):
+    logger.info("Running tests ...")
+
     model = create_model(model_name)
 
     test_cases = get_test_cases()
 
+    logger.info(f"Running test cases for model {model.name} ...")
     for test_case in test_cases:
         response, timings = run_test_case(model, test_case)
 
@@ -58,9 +65,11 @@ def run_test_case(model: Model, test_case: TestCase) -> Tuple[ChatResponse, Timi
     :param test_case: The test case to use.
     :return: The response from the model and the timings.
     """
+    logger.info(f"Running test case {test_case.id}")
     image_paths = get_image_paths(test_case.letter_id, test_case.image_selection)
     recipients_data = get_recipients_data(test_case.household_id)
 
+    logger.info("Running test ...")
     match model.family:
         case ModelFamily.Qwen3:
             return qwen3.test(image_paths, recipients_data, model.name)
@@ -76,6 +85,8 @@ def get_image_paths(letter_id: int, selection: ImageSelection) -> List[str]:
     :param selection: The selection of images.
     :return: A list of image paths.
     """
+    logger.info(f"Getting image paths for selection {selection}")
+
     paths = []
     match selection:
         case ImageSelection.ALL:
@@ -91,6 +102,8 @@ def get_image_paths(letter_id: int, selection: ImageSelection) -> List[str]:
             paths.append(get_image_path(letter_id, ImageQuality.CUT_OFF))
         case ImageSelection.VERY_BLURRED:
             paths.append(get_image_path(letter_id, ImageQuality.VERY_BLURRED))
+
+    logger.info(f"Found {len(paths)} paths: {paths}")
     return paths
 
 
@@ -101,7 +114,7 @@ def get_recipients_data(household_id: int) -> List[CompleteRecipientData]:
     :param household_id: The id of the household.
     :return: A list of recipients data.
     """
-
+    logger.info(f"Getting recipients data for household {household_id}")
     household = get_household(household_id)
     recipients = get_all_recipients(household_id)
 
@@ -119,6 +132,7 @@ def check_response(response: ChatResponse, test_case: TestCase) -> Tuple[bool, b
     :param test_case: The test case to use.
     :return: Tuple of bools consisting of match_found and correct_answer.
     """
+    logger.info("Checking response")
     message = response.message.content
 
     if message.startswith("SUCCESS"):

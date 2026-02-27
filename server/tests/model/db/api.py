@@ -10,6 +10,9 @@ from .model import (
     TestCase,
     TestResult,
 )
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Database:
@@ -58,6 +61,7 @@ def get_prompt(model_family: str) -> str:
     :param model_family: The model family: 'Qwen3' | 'Llama'.
     :return: The prompt for the model family.
     """
+    logger.info(f"Getting prompt for model family {model_family}")
     return db.con.execute(
         "select prompt from prompts where model = ?", [model_family]
     ).fetchone()
@@ -70,7 +74,7 @@ def get_household(household_id: int) -> Household:
     :param household_id: The id of the household.
     :return: The household data.
     """
-
+    logger.info(f"Getting household {household_id}")
     household = db.con.execute(
         "select * from households where id = ?", [household_id]
     ).fetchone()
@@ -93,7 +97,7 @@ def get_all_recipients(household_id: int) -> List[Recipient]:
     :param household_id: The id of the household.
     :return: A list of all the recipients.
     """
-
+    logger.info(f"Getting all recipients for household {household_id}")
     recipients = db.con.execute(
         "select * from recipients where household = ?", [household_id]
     ).fetchall()
@@ -122,11 +126,15 @@ def create_model(model_name: str) -> Model:
     :param model_name: The model name.
     :return: The model object.
     """
+
+    logger.info("Creating model")
+
     model = db.con.execute(
         "select * from models where name = ?", [model_name]
     ).fetchone()
 
     if model is None:
+        logger.info("Model not found in DB")
         lower_name = model_name.lower()
         if lower_name.startswith("qwen3"):
             model_family = ModelFamily.Qwen3
@@ -134,6 +142,8 @@ def create_model(model_name: str) -> Model:
             model_family = ModelFamily.Llama
         else:
             raise ValueError(f"Unknown model family: {model_name}")
+
+        logger.info(f"Inserting model {model_name} of family {model_family} into DB")
 
         cursor = db.con.execute(
             "insert into models (name, family) values (?,?)",
@@ -144,8 +154,10 @@ def create_model(model_name: str) -> Model:
         model_id = cursor.lastrowid
         assert type(model_id) is int
 
+        logger.info(f"Inserted model with id {model_id} successfully")
         return Model(model_id, model_name, model_family)
 
+    logger.info(f"Found matching model with id {model['id']} in DB")
     return Model(model["id"], model["name"], ModelFamily(model["family"]))
 
 
@@ -155,6 +167,7 @@ def get_test_cases() -> List[TestCase]:
 
     :return: list of test cases
     """
+    logger.info("Getting test cases")
     test_cases = db.con.execute("select * from test_cases").fetchall()
 
     return [
@@ -174,6 +187,7 @@ def store_test_result(test_result: TestResult):
 
     :param test_result: The test result to store.
     """
+    logger.info("Storing test result")
     db.con.execute(
         "insert into model_test_results (time, tesseract_time, llama_time, match_found, correct_answer, test_id, complete_response) values (?,?,?,?,?,?,?)",
         [

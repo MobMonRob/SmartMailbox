@@ -5,6 +5,9 @@ from ollama import ChatResponse
 
 from .db.api import get_prompt
 from .db.model import Timings, CompleteRecipientData
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def test(
@@ -19,11 +22,16 @@ def test(
 
     :return: Response from the model and the timings.
     """
+    logger.info(
+        f"Testing {model_name} with images {image_paths} and recipient data {recipients_data}"
+    )
+    ollama.show()
 
     prompt = get_prompt(model_family="Qwen3")
 
     prompt += "\n".join(str(recipient) for recipient in recipients_data)
 
+    logger.info(f"Running {model_name}")
     start_time = time.time()
 
     response = ollama.chat(
@@ -33,4 +41,10 @@ def test(
 
     end_time = time.time()
 
-    return response, Timings(end_time - start_time)
+    logger.info("Finished run")
+
+    elapsed_time = end_time - start_time
+
+    logger.info(f"Elapsed time: {elapsed_time}")
+
+    return response, Timings(elapsed_time)

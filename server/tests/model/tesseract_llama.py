@@ -6,6 +6,9 @@ from ollama import ChatResponse
 
 from .db.model import Timings, CompleteRecipientData
 from .db.api import get_prompt
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def test(
@@ -20,9 +23,12 @@ def test(
 
     :return: Response from the model and the timings.
     """
-
+    logger.info(
+        f"Testing {model_name} with images {image_paths} and recipient data {recipients_data}"
+    )
     prompt = get_prompt(model_family="Llama")
 
+    logger.info("Running tesseract")
     tesseract_start_time = time.time()
 
     extracted_text_list = [
@@ -37,9 +43,16 @@ def test(
 
     tesseract_end_time = time.time()
 
+    logger.info("Finished run")
+    logger.info(
+        f"Elapsed time for tesseract: {tesseract_end_time - tesseract_start_time}"
+    )
+
     prompt += "\n".join(str(recipient) for recipient in recipients_data)
 
     prompt += f"\n{extracted_text}"
+
+    logger.info(f"Running {model_name}")
 
     llama_start_time = time.time()
 
@@ -50,8 +63,13 @@ def test(
 
     llama_end_time = time.time()
 
+    logger.info("Finished run")
+
     tesseract_time = tesseract_end_time - tesseract_start_time
     llama_time = llama_end_time - llama_start_time
     combined_time = tesseract_time + llama_time
+
+    logger.info(f"Elapsed time for {model_name}: {llama_time}")
+    logger.info(f"Elapsed time combined: {combined_time}")
 
     return response, Timings(combined_time, tesseract_time, llama_time)
