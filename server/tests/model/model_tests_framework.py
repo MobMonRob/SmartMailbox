@@ -10,6 +10,7 @@ from .db.api import (
     get_test_cases,
     store_test_result,
     get_solution_recipient_ids,
+    create_model_test,
 )
 
 from .db.model import (
@@ -38,11 +39,13 @@ def run_tests(model_name: str):
 
     test_cases = get_test_cases()
 
-    logger.info(f"Running test cases for model {model.name} ...")
+    logger.info(f"Running {len(test_cases)} test cases for model {model.name} ...")
     for test_case in test_cases:
         response, timings = run_test_case(model, test_case)
 
         match_found, correct_answer = check_response(response, test_case)
+
+        model_test_id = create_model_test(model, test_case)
 
         test_result = TestResult(
             time=timings.time,
@@ -50,11 +53,13 @@ def run_tests(model_name: str):
             llama_time=timings.llama_time,
             match_found=match_found,
             correct_answer=correct_answer,
-            test_id=test_case.id,
+            test_id=model_test_id,
             complete_response=response.message.content,
         )
 
         store_test_result(test_result)
+
+    logger.info("DONE")
 
 
 def run_test_case(model: Model, test_case: TestCase) -> Tuple[ChatResponse, Timings]:

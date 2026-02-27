@@ -1,8 +1,14 @@
 import sys
 
+
 from .model_tests_framework import run_tests
 import logging
-logging.basicConfig(level=logging.DEBUG)
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s | %(name)33s | %(levelname)8s | %(message)s",
+)
+
 
 def main():
     """
@@ -13,7 +19,6 @@ def main():
     """
     model = sys.argv[1]
 
-    print(model)
     run_tests(model)
 
 

@@ -61,7 +61,7 @@ def get_prompt(model_family: str) -> str:
     :param model_family: The model family: 'Qwen3' | 'Llama'.
     :return: The prompt for the model family.
     """
-    logger.info(f"Getting prompt for model family {model_family}")
+    logger.info(f"Getting prompt for model family {model_family.value}")
     return db.con.execute(
         "select prompt from prompts where model = ?", [model_family]
     ).fetchone()
@@ -143,7 +143,9 @@ def create_model(model_name: str) -> Model:
         else:
             raise ValueError(f"Unknown model family: {model_name}")
 
-        logger.info(f"Inserting model {model_name} of family {model_family} into DB")
+        logger.info(
+            f"Inserting model {model_name} of family {model_family.value} into DB"
+        )
 
         cursor = db.con.execute(
             "insert into models (name, family) values (?,?)",
@@ -161,6 +163,27 @@ def create_model(model_name: str) -> Model:
     return Model(model["id"], model["name"], ModelFamily(model["family"]))
 
 
+def create_model_test(model: Model, test_case: TestCase) -> int:
+    """
+    Creates and inserts a new model test into the db.
+
+    :param model: The tested model.
+    :param test_case: The used test case.
+    :return: The id of the created test case.
+    """
+    logger.info("Creating model test")
+
+    cursor = db.con.execute(
+        "insert into model_tests (model, test_case_id) values (?,?)",
+        [model.id, test_case.id],
+    )
+    db.con.commit()
+
+    model_test_id = cursor.lastrowid
+    assert type(model_test_id) is int
+    return model_test_id
+
+
 def get_test_cases() -> List[TestCase]:
     """
     Returns a list of all test cases.
@@ -169,6 +192,8 @@ def get_test_cases() -> List[TestCase]:
     """
     logger.info("Getting test cases")
     test_cases = db.con.execute("select * from test_cases").fetchall()
+
+    logger.info(f"Found {len(test_cases)} test cases")
 
     return [
         TestCase(
