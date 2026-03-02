@@ -25,7 +25,6 @@ def test(
     logger.info(
         f"Testing {model_name} with images {image_paths} and recipient data {recipients_data}"
     )
-    # ollama.show()
 
     prompt = get_prompt(model_family=ModelFamily.Qwen3)
 

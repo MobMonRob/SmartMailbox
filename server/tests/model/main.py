@@ -1,11 +1,10 @@
 import sys
 
-
 from .model_tests_framework import run_tests
 import logging
 
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="%(asctime)s | %(name)33s | %(levelname)8s | %(message)s",
 )
 

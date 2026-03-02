@@ -25,11 +25,10 @@ python -m app.main
 
 ```json
 {
-  "code": string, // "SUCCESS" | "FAIL"
-  "ids": [], // Comma-separated List of matched IDs: [1,2,3]
-  "fail_reason": string, // reason for failure 
-  "best_image_id": int,
-  "mail_content": string // message for user about mail details
+  "success": boolean, // true = success, false = fail
+  "recipient_ids": [], // Comma-separated List of matched IDs: [1,2,3]
+  "best_image_id": number,
+  "fail_reason": string // reason for failure 
 }
 ```
 
@@ -44,6 +43,7 @@ python -m app.main
 - cannot find match for text with certainty > ? % # TODO test certainty level, also configurable
 
 ### Testing
+
 - prompt
 - images
    - categories (different types of images), different quality
@@ -61,12 +61,14 @@ python -m app.main
     - 2. llm answer for all 5 at once (Testing that capabilities do not get worse if low quality images are also part of the input)
 
 #### Images
-mail types: postcard, letter, letter with window
-writing: printed, handwriting, cursive handwriting
-receivers: one, family, multiple
+
+mail types: postcard, letter, letter with window \
+writing: printed, handwriting, cursive handwriting \
+receivers: one, family, multiple, wrong person, french receiver \
 image qualities: perfect, slightly blurred, flash visible, very blurred, cut off
 
 #### User Data
+
 - only matching the receiver
 - only not matching the receiver
 - matching multiple receivers (family/multiple recipients)
@@ -105,9 +107,11 @@ tbd
 - tesseract_time (Real | NULL)
 - llama_time (Real | NULL)
 - match_found ("SUCCESS" | "FAIL")
-- correct_answer (Bool) # all found recipient ids match all recipient ids for the test_case in the TestRecipientSolutions table
-- test_id (Int, foreign key -> ModelTests.id)
+- correct_recipient_ids (Bool) # all found recipient ids match all recipient ids for the test_case in the TestRecipientSolutions table
+- correct_best_image_id (Bool)
+- model_test_id (Int, foreign key -> ModelTests.id)
 - complete_response (Text)
+- error_msg (Text)
 
 ### ModelTests
 - id (Int, key)
@@ -130,15 +134,19 @@ tbd
 - model ("Qwen3" | "Llama", foreign key -> Models.family)
 - prompt (Text)
 
-### TestRecipientSolutions
-- test_case_id (Int, foreign key, not unique)
-- recipient_id (Int, foreign key, not unique)
+### TestCaseSolutionsCorrectRecipients
+- test_case_id (Int, foreign key -> TestCases.id, not unique)
+- recipient_id (Int, foreign key -> Images.id, not unique)
+
+### TestCaseSolutionsBestImage
+- test_case_id (Int, foreign key -> TestCases.id, not unique)
+- image_id (Int, foreign key -> Images.id, not unique)
 
 ### Letters
 - id (Int, key)
  
-### LetterQuality
-- (index)
+### Images
+- id (Int, key)
 - letter_id (Int, foreign key -> Letters.id)
 - quality ("PERFECT" | "SLIGHTLY_BLURRED" | "FLASH_VISIBLE" | "VERY_BLURRED" | "CUT_OFF")
 - image_path (Text)

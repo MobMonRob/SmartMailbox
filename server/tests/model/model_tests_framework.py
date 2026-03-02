@@ -2,6 +2,7 @@ import json
 from typing import List, Tuple
 
 from ollama import ChatResponse
+import ollama
 
 from .db.api import (
     get_image_path,
@@ -40,6 +41,14 @@ def run_tests(model_name: str):
     logger.info("Running tests ...")
 
     model = create_model(model_name)
+
+    logger.info("Checking model availability ...")
+
+    available_models = [model.model for model in ollama.list()["models"]]
+    if model_name not in available_models:
+        logger.info(f"Pulling model {model_name} ...")
+        ollama.pull(model_name)
+    logger.info("Model is available")
 
     test_cases = get_test_cases()
 
