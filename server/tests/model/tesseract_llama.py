@@ -4,7 +4,7 @@ import ollama
 import pytesseract
 from ollama import ChatResponse
 
-from .db.model import Timings, CompleteRecipientData
+from .db.model import Timings, CompleteRecipientData, ModelFamily
 from .db.api import get_prompt
 import logging
 
@@ -26,7 +26,7 @@ def test(
     logger.info(
         f"Testing {model_name} with images {image_paths} and recipient data {recipients_data}"
     )
-    prompt = get_prompt(model_family="Llama")
+    prompt = get_prompt(model_family=ModelFamily.Llama)
 
     logger.info("Running tesseract")
     tesseract_start_time = time.time()

@@ -1,3 +1,4 @@
+import json
 from typing import List, Tuple
 
 from ollama import ChatResponse
@@ -11,6 +12,7 @@ from .db.api import (
     store_test_result,
     get_solution_recipient_ids,
     create_model_test,
+    get_solution_best_image_id,
 )
 
 from .db.model import (
@@ -23,6 +25,8 @@ from .db.model import (
     CompleteRecipientData,
     create_complete_recipient_data,
     TestResult,
+    ModelResponse,
+    ModelAnswerCheck,
 )
 
 from . import qwen3, tesseract_llama
@@ -43,7 +47,11 @@ def run_tests(model_name: str):
     for test_case in test_cases:
         response, timings = run_test_case(model, test_case)
 
-        match_found, correct_answer = check_response(response, test_case)
+        response_message = response.message.content
+
+        assert response_message is not None
+
+        model_answer_check = check_response(response_message, test_case)
 
         model_test_id = create_model_test(model, test_case)
 
@@ -51,10 +59,12 @@ def run_tests(model_name: str):
             time=timings.time,
             tesseract_time=timings.tesseract_time,
             llama_time=timings.llama_time,
-            match_found=match_found,
-            correct_answer=correct_answer,
-            test_id=model_test_id,
-            complete_response=response.message.content,
+            match_found=model_answer_check.match_found,
+            correct_recipient_ids=model_answer_check.correct_recipient_ids,
+            correct_image_id=model_answer_check.correct_image_id,
+            model_test_id=model_test_id,
+            complete_response=response_message,
+            error_msg=model_answer_check.error_msg,
         )
 
         store_test_result(test_result)
@@ -128,45 +138,94 @@ def get_recipients_data(household_id: int) -> List[CompleteRecipientData]:
     ]
 
 
-# TODO: improve this code to match the json response format of the model
-def check_response(response: ChatResponse, test_case: TestCase) -> Tuple[bool, bool]:
+def check_response(model_response: str, test_case: TestCase) -> ModelAnswerCheck:
     """
     Checks the models response against the test case.
 
-    :param response: The response from the model.
+    :param model_response: The response from the model.
     :param test_case: The test case to use.
-    :return: Tuple of bools consisting of match_found and correct_answer.
+    :return: ModelAnswerCheck.
     """
     logger.info("Checking response")
-    message = response.message.content
 
-    if message.startswith("SUCCESS"):
-        match_found = True
-        message = message.removeprefix("SUCCESS;")
+    # {
+    #   "success": boolean,
+    #   "recipient_ids": [],
+    #   "best_image_id": number,
+    #   "fail_reason": string
+    # }
 
-        recipient_ids = get_recipient_id_list_from_response(message)
+    logger.info("Parsing JSON")
+    response_json = json.loads(model_response)
+    response = ModelResponse(**response_json)
 
-        if match_found and len(recipient_ids) == 0:
-            raise Exception(f"Successful match but no recipient ids found {message}")
+    logger.info(f"Response: {response}")
 
-        correct_answer = match_response_against_solution(recipient_ids, test_case.id)
+    error_msg = ""
+    correct_recipient_ids = True
+    correct_image_id = True
 
-        return match_found, correct_answer
+    if response.success:
+        logger.info("Response is successful")
 
-    if message.startswith("FAIL"):
-        match_found = False
+        logger.info("Checking recipient IDs")
+        correct_recipient_ids_check = check_recipient_ids(
+            response.recipient_ids, test_case
+        )
+        if correct_recipient_ids_check != "":
+            err = f"Error at correct recipients ID check: {correct_recipient_ids_check}"
+            logger.info(err)
+            error_msg += err + "\n"
+            correct_recipient_ids = False
 
-        correct_ids = get_solution_recipient_ids(test_case.id)
-        correct_answer = len(correct_ids) == 0
+        logger.info("Checking best image ID")
+        correct_image_id_check = check_image_id(response.best_image_id, test_case)
+        if correct_image_id_check != "":
+            err = f"Error at correct image ID check: {correct_image_id_check}"
+            logger.info(err)
+            error_msg += err + "\n"
+            correct_image_id = False
 
-        return match_found, correct_answer
+        logger.info("Checking that fail reason is empty")
+        if response.fail_reason != "":
+            err = f"Fail reason is not empty even though response is marked successful: {response.fail_reason}"
+            logger.info(err)
+            error_msg += err + "\n"
 
-    raise Exception(f"Invalid response format: {message}")
+    else:
+        logger.info("Response is not successful")
+
+        logger.info("Checking that list of recipient IDs is empty")
+        if len(response.recipient_ids) == 0:
+            err = f"Provided recipient IDs event though the response is marked failed: {response.recipient_ids}"
+            logger.info(err)
+            error_msg += err + "\n"
+            correct_recipient_ids = False
+
+        logger.info("Checking best image ID")
+        correct_image_id_check = check_image_id(response.best_image_id, test_case)
+        if correct_image_id_check != "":
+            err = f"Error at correct image ID check: {correct_image_id_check}\n"
+            logger.info(err)
+            error_msg += err + "\n"
+            correct_image_id = False
+
+        if response.fail_reason == "":
+            err = "Fail reason is empty even though response is marked failed\n"
+            logger.info(err)
+            error_msg += err + "\n"
+
+    return ModelAnswerCheck(
+        match_found=response.success,
+        correct_recipient_ids=correct_recipient_ids,
+        correct_image_id=correct_image_id,
+        error_msg=error_msg,
+    )
 
 
 def get_recipient_id_list_from_response(message: str) -> List[int]:
     """
-    Get the recipient ids from the string array in the models response.
+    Get the recipient ids from the string array in the model's response.
 
     **Example**: '[1,2,3]' => [1, 2, 3]
 
@@ -180,21 +239,39 @@ def get_recipient_id_list_from_response(message: str) -> List[int]:
     ]
 
 
-def match_response_against_solution(
-    recipient_ids: List[int], test_case_id: int
-) -> bool:
+def check_recipient_ids(recipient_ids: List[int], test_case: TestCase) -> str:
     """
-    Check if the ids in the response matches the solution.
+    Check if the ids in the response matches the solution of the test case.
 
-    :param
-
+    :param recipient_ids: The list of id's to check.
+    :param test_case: The test case.
+    :return: Empty string if correct, else an error message.
     """
-    correct_ids = get_solution_recipient_ids(test_case_id)
+    correct_ids = get_solution_recipient_ids(test_case.id)
 
     if len(correct_ids) != len(recipient_ids):
-        return False
+        return "No recipient IDs provided."
 
     recipient_ids.sort()
     correct_ids.sort()
 
-    return recipient_ids == correct_ids
+    if recipient_ids == correct_ids:
+        return ""
+
+    return f"Provided recipient IDs do not match correct ids: {recipient_ids} != {correct_ids}"
+
+
+def check_image_id(image_id: int, test_case: TestCase) -> str:
+    """
+    Check if the image id in the response matches the solution of the test case.
+
+    :param image_id: The id of the image to check.
+    :param test_case: The test case.
+    :return: Empty string if correct, else an error message.
+    """
+    correct_image_id = get_solution_best_image_id(test_case.id)
+
+    if image_id == correct_image_id:
+        return ""
+
+    return f"Provided image ID does not match correct image ID: {image_id} != {correct_image_id}"

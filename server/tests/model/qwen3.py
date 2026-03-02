@@ -4,7 +4,7 @@ import ollama
 from ollama import ChatResponse
 
 from .db.api import get_prompt
-from .db.model import Timings, CompleteRecipientData
+from .db.model import Timings, CompleteRecipientData, ModelFamily
 import logging
 
 logger = logging.getLogger(__name__)
@@ -25,9 +25,9 @@ def test(
     logger.info(
         f"Testing {model_name} with images {image_paths} and recipient data {recipients_data}"
     )
-    ollama.show()
+    # ollama.show()
 
-    prompt = get_prompt(model_family="Qwen3")
+    prompt = get_prompt(model_family=ModelFamily.Qwen3)
 
     prompt += "\n".join(str(recipient) for recipient in recipients_data)
 

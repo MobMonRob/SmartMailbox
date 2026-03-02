@@ -54,16 +54,16 @@ def get_image_path(letter_id: int, quality: ImageQuality) -> str | None:
     ).fetchone()
 
 
-def get_prompt(model_family: str) -> str:
+def get_prompt(model_family: ModelFamily) -> str:
     """
     Returns the prompt for the model family.
 
-    :param model_family: The model family: 'Qwen3' | 'Llama'.
+    :param model_family: The model family.
     :return: The prompt for the model family.
     """
     logger.info(f"Getting prompt for model family {model_family.value}")
     return db.con.execute(
-        "select prompt from prompts where model = ?", [model_family]
+        "select prompt from prompts where model = ?", [model_family.value]
     ).fetchone()
 
 
@@ -214,15 +214,17 @@ def store_test_result(test_result: TestResult):
     """
     logger.info("Storing test result")
     db.con.execute(
-        "insert into model_test_results (time, tesseract_time, llama_time, match_found, correct_answer, test_id, complete_response) values (?,?,?,?,?,?,?)",
+        "insert into model_test_results (time, tesseract_time, llama_time, match_found, correct_recipient_ids, correct_best_image_id, model_test_id, complete_response, error_msg) values (?,?,?,?,?,?,?)",
         [
             test_result.time,
             test_result.tesseract_time,
             test_result.llama_time,
             test_result.match_found,
-            test_result.correct_answer,
-            test_result.test_id,
+            test_result.correct_recipient_ids,
+            test_result.correct_image_id,
+            test_result.model_test_id,
             test_result.complete_response,
+            test_result.error_msg,
         ],
     )
 
@@ -240,3 +242,18 @@ def get_solution_recipient_ids(test_case_id: int) -> List[int]:
     ).fetchall()
 
     return [int(recipient_id) for recipient_id in ids]
+
+
+def get_solution_best_image_id(test_case_id: int) -> int:
+    """
+    Get the correct best image id for a given test case.
+
+    :param test_case_id: The id of the test case.
+    :return: The id of the image.
+    """
+    image_id = db.con.execute(
+        "select image_id from test_case_solutions_best_image where test_case_id = ?",
+        [test_case_id],
+    ).fetchone()
+
+    return int(image_id)

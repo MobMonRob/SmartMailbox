@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 
 class ImageSelection(Enum):
@@ -31,12 +31,22 @@ class TestCase:
 @dataclass
 class TestResult:
     match_found: bool
-    correct_answer: bool
-    test_id: int
+    correct_recipient_ids: bool
+    correct_image_id: bool
+    model_test_id: int
     complete_response: str
+    error_msg: str
     time: float
     tesseract_time: float | None = None
     llama_time: float | None = None
+
+
+@dataclass
+class ModelAnswerCheck:
+    match_found: bool
+    correct_recipient_ids: bool
+    correct_image_id: bool
+    error_msg: str
 
 
 class ModelFamily(Enum):
@@ -97,6 +107,14 @@ class CompleteRecipientData:
 
     def __str__(self) -> str:
         return f"ID: {self.recipient_id}\nHousehold: {self.household_id}\nEmail: {self.email}\nFirstname: {self.firstname}\nMiddlename: {self.middlename}\nSurname: {self.surname}\nTitle: {self.title}\nCountry: {self.country}\nZipcode: {self.zipcode}\nCity: {self.city}\nStreet: {self.street}\nHouse number: {self.house_number}"
+
+
+@dataclass
+class ModelResponse:
+    success: bool
+    recipient_ids: List[int]
+    best_image_id: int
+    fail_reason: str
 
 
 def create_complete_recipient_data(
