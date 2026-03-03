@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, List
 
+from pydantic import BaseModel, model_validator
+
 
 class ImageSelection(Enum):
     ALL = "ALL"
@@ -110,11 +112,19 @@ class CompleteRecipientData:
 
 
 @dataclass
-class ModelResponse:
+class ModelResponse(BaseModel):
     success: bool
     recipient_ids: List[int]
     best_image_id: int
     fail_reason: str
+
+    @model_validator(mode="after")
+    def validate_consistency(self) -> "ModelResponse":
+        if self.success and self.fail_reason:
+            raise ValueError("Success is True but fail_reason is provided.")
+        if not self.success and not self.fail_reason:
+            raise ValueError("Success is False but fail_reason is empty.")
+        return self
 
 
 def create_complete_recipient_data(

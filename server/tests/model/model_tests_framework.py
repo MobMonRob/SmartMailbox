@@ -1,4 +1,3 @@
-import json
 from typing import List, Tuple
 
 from ollama import ChatResponse
@@ -157,78 +156,47 @@ def check_response(model_response: str, test_case: TestCase) -> ModelAnswerCheck
     """
     logger.info("Checking response")
 
-    # {
-    #   "success": boolean,
-    #   "recipient_ids": [],
-    #   "best_image_id": number,
-    #   "fail_reason": string
-    # }
-
-    logger.info("Parsing JSON")
-    response_json = json.loads(model_response)
-    response = ModelResponse(**response_json)
+    try:
+        logger.info("Parsing JSON")
+        response = ModelResponse.model_validate_json(model_response)
+    except Exception as e:
+        return ModelAnswerCheck(
+            match_found=False,
+            correct_recipient_ids=False,
+            correct_image_id=False,
+            error_msg=f"JSON/Schema Error: {e}",
+        )
 
     logger.info(f"Response: {response}")
 
-    error_msg = ""
-    correct_recipient_ids = True
-    correct_image_id = True
+    errors = []
 
-    if response.success:
-        logger.info("Response is successful")
+    # Check Recipient IDs
+    logger.info("Checking recipient IDs")
+    recipient_err = check_recipient_ids(response.recipient_ids, test_case)
+    if recipient_err:
+        err = f"Error at correct recipients ID check: {recipient_err}"
+        logger.info(err)
+        errors.append(err)
 
-        logger.info("Checking recipient IDs")
-        correct_recipient_ids_check = check_recipient_ids(
-            response.recipient_ids, test_case
-        )
-        if correct_recipient_ids_check != "":
-            err = f"Error at correct recipients ID check: {correct_recipient_ids_check}"
-            logger.info(err)
-            error_msg += err + "\n"
-            correct_recipient_ids = False
+    # Check Image ID
+    logger.info("Checking best image ID")
+    image_err = check_image_id(response.best_image_id, test_case)
+    if image_err:
+        err = f"Error at correct image ID check: {image_err}"
+        logger.info(err)
+        errors.append(err)
 
-        logger.info("Checking best image ID")
-        correct_image_id_check = check_image_id(response.best_image_id, test_case)
-        if correct_image_id_check != "":
-            err = f"Error at correct image ID check: {correct_image_id_check}"
-            logger.info(err)
-            error_msg += err + "\n"
-            correct_image_id = False
-
-        logger.info("Checking that fail reason is empty")
-        if response.fail_reason != "":
-            err = f"Fail reason is not empty even though response is marked successful: {response.fail_reason}"
-            logger.info(err)
-            error_msg += err + "\n"
-
-    else:
-        logger.info("Response is not successful")
-
-        logger.info("Checking that list of recipient IDs is empty")
-        if len(response.recipient_ids) == 0:
-            err = f"Provided recipient IDs event though the response is marked failed: {response.recipient_ids}"
-            logger.info(err)
-            error_msg += err + "\n"
-            correct_recipient_ids = False
-
-        logger.info("Checking best image ID")
-        correct_image_id_check = check_image_id(response.best_image_id, test_case)
-        if correct_image_id_check != "":
-            err = f"Error at correct image ID check: {correct_image_id_check}\n"
-            logger.info(err)
-            error_msg += err + "\n"
-            correct_image_id = False
-
-        if response.fail_reason == "":
-            err = "Fail reason is empty even though response is marked failed\n"
-            logger.info(err)
-            error_msg += err + "\n"
+    if not response.success and not response.fail_reason:
+        err = "Model failed but provided no reason."
+        logger.info(err)
+        errors.append(err)
 
     return ModelAnswerCheck(
         match_found=response.success,
-        correct_recipient_ids=correct_recipient_ids,
-        correct_image_id=correct_image_id,
-        error_msg=error_msg,
+        correct_recipient_ids=not bool(recipient_err),
+        correct_image_id=not bool(image_err),
+        error_msg="\n".join(errors),
     )
 
 

@@ -4,7 +4,7 @@ import ollama
 import pytesseract
 from ollama import ChatResponse
 
-from .db.model import Timings, CompleteRecipientData, ModelFamily
+from .db.model import Timings, CompleteRecipientData, ModelFamily, ModelResponse
 from .db.api import get_prompt
 import logging
 
@@ -59,6 +59,7 @@ def test(
     response = ollama.chat(
         model=model_name,
         messages=[{"role": "user", "content": prompt}],
+        format=ModelResponse.model_json_schema(),
     )
 
     llama_end_time = time.time()

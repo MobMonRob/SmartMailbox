@@ -4,7 +4,7 @@ import ollama
 from ollama import ChatResponse
 
 from .db.api import get_prompt
-from .db.model import Timings, CompleteRecipientData, ModelFamily
+from .db.model import Timings, CompleteRecipientData, ModelFamily, ModelResponse
 import logging
 
 logger = logging.getLogger(__name__)
@@ -36,6 +36,7 @@ def test(
     response = ollama.chat(
         model=model_name,
         messages=[{"role": "user", "content": prompt, "images": image_paths}],
+        format=ModelResponse.model_json_schema(),
     )
 
     end_time = time.time()
