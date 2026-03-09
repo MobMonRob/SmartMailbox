@@ -65,7 +65,7 @@ python -m app.main
 mail types: postcard, letter, letter with window \
 writing: printed, handwriting, cursive handwriting \
 receivers: one, family, multiple, wrong person, french receiver \
-image qualities: perfect, slightly blurred, flash visible, very blurred, cut off
+image qualities: perfect, slightly blurred, very blurred, cut off
 
 #### User Data
 
@@ -125,7 +125,7 @@ tbd
 ### TestCases
 - id (Int, key)
 - letter_id (Int, foreign key -> Letters.id)
-- image_selection ("ALL" | "PERFECT" |  "SLIGHTLY_BLURRED" | "FLASH_VISIBLE" | "VERY_BLURRED" | "CUT_OFF")
+- image_selection ("ALL" | "PERFECT" |  "SLIGHTLY_BLURRED" | "VERY_BLURRED" | "CUT_OFF")
 - household_id (Int, foreign key)
 
 ### Prompts
@@ -150,7 +150,7 @@ tbd
 ### Images
 - id (Int, key)
 - letter_id (Int, foreign key -> Letters.id)
-- quality ("PERFECT" | "SLIGHTLY_BLURRED" | "FLASH_VISIBLE" | "VERY_BLURRED" | "CUT_OFF")
+- quality ("PERFECT" | "SLIGHTLY_BLURRED" | "VERY_BLURRED" | "CUT_OFF")
 - image_path (Text)
 
 ## Prompts

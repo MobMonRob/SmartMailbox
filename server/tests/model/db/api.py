@@ -43,7 +43,7 @@ def get_image_path(letter_id: int, quality: ImageQuality) -> str | None:
     Returns the path of the letter in the specified quality.
 
     :param letter_id: The id of the letter the image belongs to.
-    :param quality: The quality of the image. Valid values are: "PERFECT" | "SLIGHTLY_BLURRED" | "FLASH_VISIBLE" | "VERY_BLURRED" | "CUT_OFF".
+    :param quality: The quality of the image. Valid values are: "PERFECT" | "SLIGHTLY_BLURRED" | "VERY_BLURRED" | "CUT_OFF".
 
     :return: The path to the image or None if the path was not found.
     """

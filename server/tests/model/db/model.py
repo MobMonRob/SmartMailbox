@@ -9,7 +9,6 @@ class ImageSelection(Enum):
     ALL = "ALL"
     PERFECT = "PERFECT"
     SLIGHTLY_BLURRED = "SLIGHTLY_BLURRED"
-    FLASH_VISIBLE = "FLASH_VISIBLE"
     VERY_BLURRED = "VERY_BLURRED"
     CUT_OFF = "CUT_OFF"
 
@@ -17,7 +16,6 @@ class ImageSelection(Enum):
 class ImageQuality(Enum):
     PERFECT = "PERFECT"
     SLIGHTLY_BLURRED = "SLIGHTLY_BLURRED"
-    FLASH_VISIBLE = "FLASH_VISIBLE"
     VERY_BLURRED = "VERY_BLURRED"
     CUT_OFF = "CUT_OFF"
 

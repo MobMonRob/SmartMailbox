@@ -119,8 +119,6 @@ def get_image_paths(letter_id: int, selection: ImageSelection) -> List[str]:
             paths.append(get_image_path(letter_id, ImageQuality.PERFECT))
         case ImageSelection.SLIGHTLY_BLURRED:
             paths.append(get_image_path(letter_id, ImageQuality.SLIGHTLY_BLURRED))
-        case ImageSelection.FLASH_VISIBLE:
-            paths.append(get_image_path(letter_id, ImageQuality.FLASH_VISIBLE))
         case ImageSelection.CUT_OFF:
             paths.append(get_image_path(letter_id, ImageQuality.CUT_OFF))
         case ImageSelection.VERY_BLURRED:
