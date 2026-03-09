@@ -51,7 +51,7 @@ def get_image_path(letter_id: int, quality: ImageQuality) -> str | None:
     return db.con.execute(
         "select image_path from letter_quality where letter_id = ? and quality = ?",
         [letter_id, quality.value],
-    ).fetchone()
+    ).fetchone()["image_path"]
 
 
 def get_prompt(model_family: ModelFamily) -> str:
@@ -241,7 +241,7 @@ def get_solution_recipient_ids(test_case_id: int) -> List[int]:
         [test_case_id],
     ).fetchall()
 
-    return [int(recipient_id) for recipient_id in ids]
+    return [int(recipient_id["recipient_id"]) for recipient_id in ids]
 
 
 def get_solution_best_image_id(test_case_id: int) -> int:
@@ -254,6 +254,6 @@ def get_solution_best_image_id(test_case_id: int) -> int:
     image_id = db.con.execute(
         "select image_id from test_case_solutions_best_image where test_case_id = ?",
         [test_case_id],
-    ).fetchone()
+    ).fetchone()["image_id"]
 
     return int(image_id)
