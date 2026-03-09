@@ -75,8 +75,7 @@ image qualities: perfect, slightly blurred, flash visible, very blurred, cut off
 - receiver and other person names are somewhat similar
 - receiver and other person names are completely different
 - receiver and other person names are very similar
-- two persons with same name, so there is no correct answer # TODO What should be the correct answer if two people have the same name
-
+- two persons with same name, so there is no correct answer
 
 ## Database
 
@@ -144,6 +143,9 @@ tbd
 
 ### Letters
 - id (Int, key)
+- format ("LETTER", "POSTCARD", "WINDOWED_LETTER")
+- writing_style ("HAND", "PRINT", "CURSIVE")
+- address (Text)
  
 ### Images
 - id (Int, key)
