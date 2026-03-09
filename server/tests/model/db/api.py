@@ -64,7 +64,7 @@ def get_prompt(model_family: ModelFamily) -> str:
     logger.info(f"Getting prompt for model family {model_family.value}")
     return db.con.execute(
         "select prompt from prompts where model = ?", [model_family.value]
-    ).fetchone()
+    ).fetchone()["prompt"]
 
 
 def get_household(household_id: int) -> Household:

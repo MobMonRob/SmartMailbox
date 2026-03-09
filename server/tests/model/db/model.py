@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, List
-
+import json
 from pydantic import BaseModel, model_validator
 
 
@@ -106,9 +106,6 @@ class CompleteRecipientData:
     city: str
     street: str
     house_number: str
-
-    def __str__(self) -> str:
-        return f"ID: {self.recipient_id}\nHousehold: {self.household_id}\nEmail: {self.email}\nFirstname: {self.firstname}\nMiddlename: {self.middlename}\nSurname: {self.surname}\nTitle: {self.title}\nCountry: {self.country}\nZipcode: {self.zipcode}\nCity: {self.city}\nStreet: {self.street}\nHouse number: {self.house_number}"
 
 
 @dataclass

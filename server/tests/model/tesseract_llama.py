@@ -7,7 +7,7 @@ from ollama import ChatResponse
 from .db.model import Timings, CompleteRecipientData, ModelFamily, ModelResponse
 from .db.api import get_prompt
 import logging
-
+import json
 logger = logging.getLogger(__name__)
 
 
@@ -48,9 +48,9 @@ def test(
         f"Elapsed time for tesseract: {tesseract_end_time - tesseract_start_time}"
     )
 
-    prompt += "\n".join(str(recipient) for recipient in recipients_data)
+    prompt += json.dumps([recipient.__dict__ for recipient in recipients_data])
 
-    prompt += f"\n{extracted_text}"
+    prompt += f"\nExtracted texts (0-indexed):\n{extracted_text}"
 
     logger.info(f"Running {model_name}")
 

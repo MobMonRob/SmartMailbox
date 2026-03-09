@@ -1,3 +1,4 @@
+import json
 import time
 from typing import List, Tuple
 import ollama
@@ -7,8 +8,8 @@ from .db.api import get_prompt
 from .db.model import Timings, CompleteRecipientData, ModelFamily, ModelResponse
 import logging
 
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
 
 def test(
     image_paths: List[str],
@@ -28,7 +29,7 @@ def test(
 
     prompt = get_prompt(model_family=ModelFamily.Qwen3)
 
-    prompt += "\n".join(str(recipient) for recipient in recipients_data)
+    prompt += json.dumps([recipient.__dict__ for recipient in recipients_data])
 
     logger.info(f"Running {model_name}")
     start_time = time.time()
