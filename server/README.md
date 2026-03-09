@@ -175,7 +175,7 @@ MATCHING INSTRUCTIONS:
 - Accept approximate matches if you are confident it refers to the same person (e.g. handwriting ambiguity, abbreviated names, missing middle name, name order swapped, ...)
 - If addressed to a household (e.g. "Familie Schneider"), include ALL recipients sharing that household_id
 - If multiple recipients share the same name and there is no other clue to the correct one, include all of them
-- "best_image_id" must be the 0-based index of the image that showed the address most clearly and completely or is most likely to be useful to a human viewer 
+- "best_image_id" must be the 0-based index of the image that showed the address most clearly and completely or is most likely to be useful to a human viewer. Always provide this. 
 - "fail_reason" must be empty string "" on success; on failure describe briefly why matching failed
 
 ---
@@ -236,7 +236,7 @@ MATCHING INSTRUCTIONS:
 - Accept approximate matches if you are confident it refers to the same person (e.g. handwriting ambiguity, abbreviated names, missing middle name, name order swapped, ...)
 - If addressed to a household (e.g. "Familie Schneider"), include ALL recipients sharing that household_id
 - If multiple recipients share the same name and there is no other clue to the correct one, include all of them
-- "best_image_id" must be the 0-based index of the image that showed the address most clearly and completely or is most likely to be useful to a human viewer 
+- "best_image_id" must be the 0-based index of the image that showed the address most clearly and completely or is most likely to be useful to a human viewer. Always provide this. 
 - "fail_reason" must be empty string "" on success; on failure describe briefly why matching failed
 
 ---
