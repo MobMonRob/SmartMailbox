@@ -67,6 +67,23 @@ writing: printed, handwriting, cursive handwriting \
 receivers: one, family, multiple, wrong person, french receiver \
 image qualities: perfect, slightly blurred, very blurred, cut off
 
+*Naming convention*: l{letter_id}_{format}_{writing_style}_{quality}.png (e.g. l1_lpp.png, l10_pcv.png)
+- letter_id: int
+- format:
+  - LETTER: l
+  - POSTCARD: p
+  - WINDOWED_LETTER: w
+- writing_style:
+  - PRINT: p
+  - CURSIVE: c
+  - HAND: h
+- quality:
+  - PERFECT: p
+  - SLIGHTLY_BLURRED: s
+  - VERY_BLURRED: v
+  - CUT_OFF: c
+
+
 #### User Data
 
 - only matching the receiver
