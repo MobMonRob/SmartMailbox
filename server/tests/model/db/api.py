@@ -154,7 +154,7 @@ def create_model(model_name: str) -> Model:
         db.con.commit()
 
         model_id = cursor.lastrowid
-        assert type(model_id) is int
+        assert isinstance(model_id, int)
 
         logger.info(f"Inserted model with id {model_id} successfully")
         return Model(model_id, model_name, model_family)
@@ -180,7 +180,7 @@ def create_model_test(model: Model, test_case: TestCase) -> int:
     db.con.commit()
 
     model_test_id = cursor.lastrowid
-    assert type(model_test_id) is int
+    assert isinstance(model_test_id, int)
     return model_test_id
 
 
@@ -244,16 +244,17 @@ def get_solution_recipient_ids(test_case_id: int) -> List[int]:
     return [int(recipient_id["recipient_id"]) for recipient_id in ids]
 
 
-def get_solution_best_image_id(test_case_id: int) -> int:
+def get_image_id(letter_id: int, image_quality: ImageQuality) -> int:
     """
-    Get the correct best image id for a given test case.
+    Get the image id for a given letter and image quality.
 
-    :param test_case_id: The id of the test case.
+    :param letter_id: The id of the letter.
+    :param image_quality: The quality of the image.
     :return: The id of the image.
     """
     image_id = db.con.execute(
-        "select image_id from test_case_solutions_best_image where test_case_id = ?",
-        [test_case_id],
-    ).fetchone()["image_id"]
+        "select id from images where letter_id = ? and quality = ?",
+        [letter_id, image_quality.value],
+    ).fetchone()["id"]
 
     return int(image_id)

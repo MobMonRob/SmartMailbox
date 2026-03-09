@@ -1,7 +1,5 @@
 import sys
 
-from .db.api import get_prompt, get_household
-from .db.model import ModelFamily
 from .model_tests_framework import run_tests
 import logging
 
@@ -18,8 +16,6 @@ def main():
 
     **Example**: python -m tests.model.main llama4
     """
-    print(get_household(1))
-
     model = sys.argv[1]
 
     run_tests(model)

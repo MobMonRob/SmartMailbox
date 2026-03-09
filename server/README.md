@@ -137,10 +137,6 @@ tbd
 - test_case_id (Int, foreign key -> TestCases.id, not unique)
 - recipient_id (Int, foreign key -> Images.id, not unique)
 
-### TestCaseSolutionsBestImage
-- test_case_id (Int, foreign key -> TestCases.id, not unique)
-- image_id (Int, foreign key -> Images.id, not unique)
-
 ### Letters
 - id (Int, key)
 - format ("LETTER", "POSTCARD", "WINDOWED_LETTER")

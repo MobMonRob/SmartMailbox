@@ -11,6 +11,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def test(
     image_paths: List[str],
     recipients_data: List[CompleteRecipientData],

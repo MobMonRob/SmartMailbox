@@ -12,7 +12,7 @@ from .db.api import (
     store_test_result,
     get_solution_recipient_ids,
     create_model_test,
-    get_solution_best_image_id,
+    get_image_id,
 )
 
 from .db.model import (
@@ -244,7 +244,16 @@ def check_image_id(image_id: int, test_case: TestCase) -> str:
     :param test_case: The test case.
     :return: Empty string if correct, else an error message.
     """
-    correct_image_id = get_solution_best_image_id(test_case.id)
+    if test_case.image_selection == ImageSelection.ALL:
+        # best image is image quality PERFECT
+        correct_image_id = get_image_id(test_case.letter_id, ImageQuality.PERFECT)
+    else:
+        # best image is the image quality equal to test_case.image_selection
+        quality = test_case.image_selection.value
+
+        assert isinstance(quality, str)
+
+        correct_image_id = get_image_id(test_case.letter_id, ImageQuality[quality])
 
     if image_id == correct_image_id:
         return ""
