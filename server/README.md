@@ -83,6 +83,10 @@ image qualities: perfect, slightly blurred, very blurred, cut off
   - VERY_BLURRED: v
   - CUT_OFF: c
 
+cmd: 
+```
+rpicam-still -o l0_lhp -e png -t 1500
+```
 
 #### User Data
 
