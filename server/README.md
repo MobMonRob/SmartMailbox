@@ -88,6 +88,11 @@ cmd:
 rpicam-still -o l0_lhp -e png -t 1500
 ```
 
+copy images:
+```
+scp -r briefkai@172.16.18.212:~/studienarbeit/SmartMailbox/server/tests/model/images ./server/tests/model/
+```
+
 #### User Data
 
 - only matching the receiver
