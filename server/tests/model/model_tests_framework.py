@@ -1,3 +1,4 @@
+import os.path
 from typing import List, Tuple
 
 from ollama import ChatResponse
@@ -116,7 +117,8 @@ def get_image_paths(letter_id: int, selection: ImageSelection) -> List[str]:
             for image_quality in ImageQuality:
                 paths.append(get_image_path(letter_id, image_quality))
         case ImageSelection.PERFECT:
-            paths.append(get_image_path(letter_id, ImageQuality.PERFECT))
+            path = get_image_path(letter_id, ImageQuality.PERFECT)
+            paths.append(os.path.abspath(path))
         case ImageSelection.SLIGHTLY_BLURRED:
             paths.append(get_image_path(letter_id, ImageQuality.SLIGHTLY_BLURRED))
         case ImageSelection.CUT_OFF:

@@ -8,7 +8,7 @@ from .model import (
     Model,
     ModelFamily,
     TestCase,
-    TestResult,
+    TestResult, ImageSelection,
 )
 import logging
 
@@ -47,9 +47,8 @@ def get_image_path(letter_id: int, quality: ImageQuality) -> str | None:
 
     :return: The path to the image or None if the path was not found.
     """
-
     return db.con.execute(
-        "select image_path from letter_quality where letter_id = ? and quality = ?",
+        "select image_path from images where letter_id = ? and quality = ?",
         [letter_id, quality.value],
     ).fetchone()["image_path"]
 
@@ -199,7 +198,7 @@ def get_test_cases() -> List[TestCase]:
         TestCase(
             id=test_case["id"],
             letter_id=test_case["letter_id"],
-            image_selection=test_case["image_selection"],
+            image_selection=ImageSelection(test_case["image_selection"]),
             household_id=test_case["household_id"],
         )
         for test_case in test_cases
@@ -212,9 +211,9 @@ def store_test_result(test_result: TestResult):
 
     :param test_result: The test result to store.
     """
-    logger.info("Storing test result")
+    logger.info(f"Storing test result: {test_result}")
     db.con.execute(
-        "insert into model_test_results (time, tesseract_time, llama_time, match_found, correct_recipient_ids, correct_best_image_id, model_test_id, complete_response, error_msg) values (?,?,?,?,?,?,?)",
+        "insert into model_test_results (time, tesseract_time, llama_time, match_found, correct_recipient_ids, correct_best_image_id, model_test_id, complete_response, error_msg) values (?,?,?,?,?,?,?,?,?)",
         [
             test_result.time,
             test_result.tesseract_time,
@@ -237,7 +236,7 @@ def get_solution_recipient_ids(test_case_id: int) -> List[int]:
     :return: a list of recipient ids
     """
     ids = db.con.execute(
-        "select recipient_id from test_recipient_solutions where test_case_id = ?",
+        "select recipient_id from test_case_solutions_correct_recipients where test_case_id = ?",
         [test_case_id],
     ).fetchall()
 

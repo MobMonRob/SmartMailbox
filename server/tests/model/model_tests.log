@@ -1,0 +1,19 @@
+2026-03-16 16:37:58,090 | tests.model.model_tests_framework |     INFO | Running tests ...
+2026-03-16 16:37:58,091 |                tests.model.db.api |     INFO | Creating model
+2026-03-16 16:37:58,092 |                tests.model.db.api |     INFO | Found matching model with id 4 in DB
+2026-03-16 16:37:58,092 | tests.model.model_tests_framework |     INFO | Checking model availability ...
+2026-03-16 16:37:58,099 |                             httpx |     INFO | HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2026-03-16 16:37:58,100 | tests.model.model_tests_framework |     INFO | Model is available
+2026-03-16 16:37:58,101 |                tests.model.db.api |     INFO | Getting test cases
+2026-03-16 16:37:58,102 |                tests.model.db.api |     INFO | Found 450 test cases
+2026-03-16 16:37:58,102 | tests.model.model_tests_framework |     INFO | Running 450 test cases for model qwen3-vl:2b ...
+2026-03-16 16:37:58,103 | tests.model.model_tests_framework |     INFO | Running test case 0
+2026-03-16 16:37:58,103 | tests.model.model_tests_framework |     INFO | Getting image paths for selection ImageSelection.PERFECT
+2026-03-16 16:37:58,103 | tests.model.model_tests_framework |     INFO | Found 1 paths: ['C:\\Programming\\studienarbeit\\SmartMailbox\\server\\tests\\model\\images\\l0_lhp.png']
+2026-03-16 16:37:58,103 | tests.model.model_tests_framework |     INFO | Getting recipients data for household 1
+2026-03-16 16:37:58,103 |                tests.model.db.api |     INFO | Getting household 1
+2026-03-16 16:37:58,104 |                tests.model.db.api |     INFO | Getting all recipients for household 1
+2026-03-16 16:37:58,104 | tests.model.model_tests_framework |     INFO | Running test ...
+2026-03-16 16:37:58,104 |                 tests.model.qwen3 |     INFO | Testing qwen3-vl:2b with images ['C:\\Programming\\studienarbeit\\SmartMailbox\\server\\tests\\model\\images\\l0_lhp.png'] and recipient data [CompleteRecipientData(recipient_id=1, household_id=1, email='marie.walz@gmail.com', firstname='Marie', middlename=None, surname='Walz', title='Frau Dr.', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17'), CompleteRecipientData(recipient_id=2, household_id=1, email='max.walz@web.de', firstname='Max', middlename=None, surname='Walz', title='Herr', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17'), CompleteRecipientData(recipient_id=3, household_id=1, email='marie.walz@gmx.de', firstname='Lisa', middlename=None, surname='Walz', title='Frau', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17'), CompleteRecipientData(recipient_id=4, household_id=1, email='marie.walter@gmx.de', firstname='Maria', middlename=None, surname='Walter', title='Frau', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17'), CompleteRecipientData(recipient_id=5, household_id=1, email='peter.hoffmann@gmx.de', firstname='Peter', middlename=None, surname='Hoffmann', title='Herr', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17')]
+2026-03-16 16:37:58,105 |                tests.model.db.api |     INFO | Getting prompt for model family Qwen3
+2026-03-16 16:37:58,105 |                 tests.model.qwen3 |     INFO | Running qwen3-vl:2b
