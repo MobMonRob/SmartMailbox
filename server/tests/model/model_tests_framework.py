@@ -37,7 +37,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def run_tests(model_name: str):
+def run_tests(model_name: str, tests: set[int] | None = None):
     logger.info("Running tests ...")
 
     model = create_model(model_name)
@@ -51,6 +51,12 @@ def run_tests(model_name: str):
     logger.info("Model is available")
 
     test_cases = get_test_cases()
+
+    logger.info(f"Found {len(test_cases)} test cases")
+
+    # filter out unwanted tests
+    if tests:
+        test_cases = [test_case for idx, test_case in enumerate(test_cases) if idx in tests]
 
     logger.info(f"Running {len(test_cases)} test cases for model {model.name} ...")
     for test_case in test_cases:
