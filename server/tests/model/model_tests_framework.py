@@ -55,7 +55,12 @@ def run_tests(model_name: str):
     logger.info(f"Running {len(test_cases)} test cases for model {model.name} ...")
     for test_case in test_cases:
         image_paths, image_ids = get_image_paths_and_ids(test_case.letter_id, test_case.image_selection)
-        response, timings = run_test_case(model, test_case, image_paths)
+        result = run_test_case(model, test_case, image_paths)
+
+        if not result:
+            continue
+
+        response, timings = result
 
         response_message = response.message.content
 
@@ -82,7 +87,7 @@ def run_tests(model_name: str):
     logger.info("DONE")
 
 
-def run_test_case(model: Model, test_case: TestCase, image_paths: List[str]) -> Tuple[ChatResponse, Timings]:
+def run_test_case(model: Model, test_case: TestCase, image_paths: List[str]) -> Tuple[ChatResponse, Timings] | None:
     """
     Runs a test case for a given model.
 

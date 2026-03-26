@@ -2,6 +2,7 @@ import time
 from typing import List, Tuple
 import ollama
 import pytesseract
+from PIL.Image import Image
 from ollama import ChatResponse
 
 from .db.model import Timings, CompleteRecipientData, ModelFamily, ModelResponse
@@ -16,7 +17,7 @@ def test(
     image_paths: List[str],
     recipients_data: List[CompleteRecipientData],
     model_name: str,
-) -> Tuple[ChatResponse, Timings]:
+) -> Tuple[ChatResponse, Timings] | None:
     """
     :param image_paths: List of paths to images to test.
     :param recipients_data: List of Recipient objects.
@@ -32,10 +33,19 @@ def test(
     logger.info("Running tesseract")
     tesseract_start_time = time.time()
 
-    extracted_text_list = [
-        (image_idx, pytesseract.image_to_string(image_path, lang="deu"))
-        for image_idx, image_path in enumerate(image_paths)
-    ]
+    extracted_text_list = []
+
+
+    for image_idx, image_path in enumerate(image_paths):
+        from PIL import Image, ImageFile
+        ImageFile.LOAD_TRUNCATED_IMAGES = True
+        try:
+            with Image.open(image_path) as img:
+                text = pytesseract.image_to_string(img, lang='deu')
+                extracted_text_list.append((image_idx, text))
+        except Exception  as e:
+            logger.error(f"Could not open image {image_path}: {e}")
+            return None
 
     extracted_text = ""
 

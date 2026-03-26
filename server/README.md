@@ -140,7 +140,7 @@ tbd
 
 ### Models
 - id (Int, key)
-- name (Text) # llama3.2-vision:11b, llama3.2-vision:90b, llama4:scout, qwen3-vl:8b(/4b/32b), qwen3-vl:8b-thinking
+- name (Text) # llama3.2:1b, llama3.2:3b, llama4:scout, qwen3-vl:8b(/4b/32b), qwen3-vl:8b-thinking
 - family ("Qwen3" | "Llama")
 
 ### TestCases
