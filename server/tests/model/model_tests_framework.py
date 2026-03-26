@@ -5,7 +5,7 @@ from ollama import ChatResponse
 import ollama
 
 from .db.api import (
-    get_image_path,
+    get_image_path_and_id,
     get_all_recipients,
     get_household,
     create_model,
@@ -54,13 +54,14 @@ def run_tests(model_name: str):
 
     logger.info(f"Running {len(test_cases)} test cases for model {model.name} ...")
     for test_case in test_cases:
-        response, timings = run_test_case(model, test_case)
+        image_paths, image_ids = get_image_paths_and_ids(test_case.letter_id, test_case.image_selection)
+        response, timings = run_test_case(model, test_case, image_paths)
 
         response_message = response.message.content
 
         assert response_message is not None
 
-        model_answer_check = check_response(response_message, test_case)
+        model_answer_check = check_response(response_message, test_case, image_ids)
 
         model_test_id = create_model_test(model, test_case)
 
@@ -81,7 +82,7 @@ def run_tests(model_name: str):
     logger.info("DONE")
 
 
-def run_test_case(model: Model, test_case: TestCase) -> Tuple[ChatResponse, Timings]:
+def run_test_case(model: Model, test_case: TestCase, image_paths: List[str]) -> Tuple[ChatResponse, Timings]:
     """
     Runs a test case for a given model.
 
@@ -90,7 +91,6 @@ def run_test_case(model: Model, test_case: TestCase) -> Tuple[ChatResponse, Timi
     :return: The response from the model and the timings.
     """
     logger.info(f"Running test case {test_case.id}")
-    image_paths = get_image_paths(test_case.letter_id, test_case.image_selection)
     recipients_data = get_recipients_data(test_case.household_id)
 
     logger.info("Running test ...")
@@ -101,7 +101,7 @@ def run_test_case(model: Model, test_case: TestCase) -> Tuple[ChatResponse, Timi
             return tesseract_llama.test(image_paths, recipients_data, model.name)
 
 
-def get_image_paths(letter_id: int, selection: ImageSelection) -> List[str]:
+def get_image_paths_and_ids(letter_id: int, selection: ImageSelection) -> Tuple[List[str],List[int]]:
     """
     Returns a list of Image paths for the given letter and selection.
 
@@ -112,22 +112,32 @@ def get_image_paths(letter_id: int, selection: ImageSelection) -> List[str]:
     logger.info(f"Getting image paths for selection {selection}")
 
     paths = []
+    ids = []
     match selection:
         case ImageSelection.ALL:
             for image_quality in ImageQuality:
-                paths.append(get_image_path(letter_id, image_quality))
+                path, image_id = get_image_path_and_id(letter_id, image_quality)
+                paths.append(os.path.abspath(path))
+                ids.append(image_id)
         case ImageSelection.PERFECT:
-            path = get_image_path(letter_id, ImageQuality.PERFECT)
+            path, image_id = get_image_path_and_id(letter_id, ImageQuality.PERFECT)
             paths.append(os.path.abspath(path))
+            ids.append(image_id)
         case ImageSelection.SLIGHTLY_BLURRED:
-            paths.append(get_image_path(letter_id, ImageQuality.SLIGHTLY_BLURRED))
+            path, image_id = get_image_path_and_id(letter_id, ImageQuality.SLIGHTLY_BLURRED.SLIGHTLY_BLURRED)
+            paths.append(os.path.abspath(path))
+            ids.append(image_id)
         case ImageSelection.CUT_OFF:
-            paths.append(get_image_path(letter_id, ImageQuality.CUT_OFF))
+            path, image_id = get_image_path_and_id(letter_id, ImageQuality.CUT_OFF)
+            paths.append(os.path.abspath(path))
+            ids.append(image_id)
         case ImageSelection.VERY_BLURRED:
-            paths.append(get_image_path(letter_id, ImageQuality.VERY_BLURRED))
+            path, image_id = get_image_path_and_id(letter_id, ImageQuality.VERY_BLURRED)
+            paths.append(os.path.abspath(path))
+            ids.append(image_id)
 
-    logger.info(f"Found {len(paths)} paths: {paths}")
-    return paths
+    logger.info(f"Found {len(paths)} paths and IDs: {paths}, {ids}")
+    return paths,ids
 
 
 def get_recipients_data(household_id: int) -> List[CompleteRecipientData]:
@@ -146,7 +156,7 @@ def get_recipients_data(household_id: int) -> List[CompleteRecipientData]:
     ]
 
 
-def check_response(model_response: str, test_case: TestCase) -> ModelAnswerCheck:
+def check_response(model_response: str, test_case: TestCase, image_ids: List[int]) -> ModelAnswerCheck:
     """
     Checks the models response against the test case.
 
@@ -181,7 +191,7 @@ def check_response(model_response: str, test_case: TestCase) -> ModelAnswerCheck
 
     # Check Image ID
     logger.info("Checking best image ID")
-    image_err = check_image_id(response.best_image_id, test_case)
+    image_err = check_image_id(image_ids[response.best_image_id], test_case)
     if image_err:
         err = f"Error at correct image ID check: {image_err}"
         logger.info(err)
@@ -227,7 +237,11 @@ def check_recipient_ids(recipient_ids: List[int], test_case: TestCase) -> str:
     correct_ids = get_solution_recipient_ids(test_case.id)
 
     if len(correct_ids) != len(recipient_ids):
-        return "No recipient IDs provided."
+
+        if len(recipient_ids) == 0:
+            return f"No recipient IDs provided. Expected {len(correct_ids)} ({correct_ids})"
+        else:
+            return f"Expected {len(correct_ids)} recipient IDs ({correct_ids}), but got {len(recipient_ids)}: {recipient_ids}"
 
     recipient_ids.sort()
     correct_ids.sort()

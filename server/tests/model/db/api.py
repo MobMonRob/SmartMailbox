@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from typing import List
+from typing import List, Tuple
 from .model import (
     Household,
     Recipient,
@@ -38,19 +38,23 @@ class Database:
 db = Database()
 
 
-def get_image_path(letter_id: int, quality: ImageQuality) -> str | None:
+def get_image_path_and_id(letter_id: int, quality: ImageQuality) -> Tuple[str, int] | None:
     """
     Returns the path of the letter in the specified quality.
 
     :param letter_id: The id of the letter the image belongs to.
     :param quality: The quality of the image. Valid values are: "PERFECT" | "SLIGHTLY_BLURRED" | "VERY_BLURRED" | "CUT_OFF".
 
-    :return: The path to the image or None if the path was not found.
+    :return: The path to the image and its ID or None if the image was not found.
     """
-    return db.con.execute(
-        "select image_path from images where letter_id = ? and quality = ?",
+    image_data =  db.con.execute(
+        "select image_path, id from images where letter_id = ? and quality = ?",
         [letter_id, quality.value],
-    ).fetchone()["image_path"]
+    ).fetchone()
+
+    if image_data:
+        return image_data["image_path"], image_data["id"]
+    return None
 
 
 def get_prompt(model_family: ModelFamily) -> str:
@@ -235,10 +239,13 @@ def get_solution_recipient_ids(test_case_id: int) -> List[int]:
     :param test_case_id: the id of the test case
     :return: a list of recipient ids
     """
+    logger.info("Getting correct recipient IDs")
     ids = db.con.execute(
         "select recipient_id from test_case_solutions_correct_recipients where test_case_id = ?",
         [test_case_id],
     ).fetchall()
+
+    logger.info(f"Found {len(ids)} correct recipient ids ({ids})")
 
     return [int(recipient_id["recipient_id"]) for recipient_id in ids]
 
