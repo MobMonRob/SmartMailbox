@@ -33,7 +33,7 @@ def test(
     tesseract_start_time = time.time()
 
     extracted_text_list = [
-        (image_idx, pytesseract.image_to_string(image_path, lang="de"))
+        (image_idx, pytesseract.image_to_string(image_path, lang="deu"))
         for image_idx, image_path in enumerate(image_paths)
     ]
 
