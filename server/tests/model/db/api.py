@@ -245,7 +245,7 @@ def get_solution_recipient_ids(test_case_id: int) -> List[int]:
         [test_case_id],
     ).fetchall()
 
-    logger.info(f"Found {len(ids)} correct recipient ids ({ids})")
+    logger.info(f"Found {len(ids)} correct recipient ids")
 
     return [int(recipient_id["recipient_id"]) for recipient_id in ids]
 
