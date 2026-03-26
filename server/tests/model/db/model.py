@@ -36,6 +36,7 @@ class TestResult:
     complete_response: str
     error_msg: str
     time: float
+    extracted_text: str
     tesseract_time: float | None = None
     llama_time: float | None = None
 

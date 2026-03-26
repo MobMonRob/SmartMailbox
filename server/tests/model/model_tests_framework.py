@@ -66,7 +66,7 @@ def run_tests(model_name: str, tests: set[int] | None = None):
         if not result:
             continue
 
-        response, timings = result
+        response, timings, extracted_text = result
 
         response_message = response.message.content
 
@@ -85,6 +85,7 @@ def run_tests(model_name: str, tests: set[int] | None = None):
             correct_image_id=model_answer_check.correct_image_id,
             model_test_id=model_test_id,
             complete_response=response_message,
+            extracted_text=extracted_text,
             error_msg=model_answer_check.error_msg,
         )
 
@@ -93,12 +94,13 @@ def run_tests(model_name: str, tests: set[int] | None = None):
     logger.info("DONE")
 
 
-def run_test_case(model: Model, test_case: TestCase, image_paths: List[str]) -> Tuple[ChatResponse, Timings] | None:
+def run_test_case(model: Model, test_case: TestCase, image_paths: List[str]) -> Tuple[ChatResponse, Timings, str] | None:
     """
     Runs a test case for a given model.
 
     :param model: The model to test.
     :param test_case: The test case to use.
+    :param image_paths: The paths to the images for the test case.
     :return: The response from the model and the timings.
     """
     logger.info(f"Running test case {test_case.id}")
@@ -107,7 +109,8 @@ def run_test_case(model: Model, test_case: TestCase, image_paths: List[str]) -> 
     logger.info("Running test ...")
     match model.family:
         case ModelFamily.Qwen3:
-            return qwen3.test(image_paths, recipients_data, model.name)
+            answer, timings = qwen3.test(image_paths, recipients_data, model.name)
+            return answer, timings, ""
         case ModelFamily.Llama:
             return tesseract_llama.test(image_paths, recipients_data, model.name)
 

@@ -217,7 +217,7 @@ def store_test_result(test_result: TestResult):
     """
     logger.info(f"Storing test result: {test_result}")
     db.con.execute(
-        "insert into model_test_results (time, tesseract_time, llama_time, match_found, correct_recipient_ids, correct_best_image_id, model_test_id, complete_response, error_msg) values (?,?,?,?,?,?,?,?,?)",
+        "insert into model_test_results (time, tesseract_time, llama_time, match_found, correct_recipient_ids, correct_best_image_id, model_test_id, complete_response, error_msg, extracted_text) values (?,?,?,?,?,?,?,?,?,?)",
         [
             test_result.time,
             test_result.tesseract_time,
@@ -228,6 +228,7 @@ def store_test_result(test_result: TestResult):
             test_result.model_test_id,
             test_result.complete_response,
             test_result.error_msg,
+            test_result.extracted_text
         ],
     )
 

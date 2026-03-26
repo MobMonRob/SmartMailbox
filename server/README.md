@@ -131,6 +131,7 @@ tbd
 - correct_best_image_id (Bool)
 - model_test_id (Int, foreign key -> ModelTests.id)
 - complete_response (Text)
+- extracted_text (Text) # empty for qwen
 - error_msg (Text)
 
 ### ModelTests

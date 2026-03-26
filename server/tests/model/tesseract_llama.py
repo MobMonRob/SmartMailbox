@@ -17,13 +17,13 @@ def test(
     image_paths: List[str],
     recipients_data: List[CompleteRecipientData],
     model_name: str,
-) -> Tuple[ChatResponse, Timings] | None:
+) -> Tuple[ChatResponse, Timings, str] | None:
     """
     :param image_paths: List of paths to images to test.
     :param recipients_data: List of Recipient objects.
     :param model_name: Name of the model to use, e.g. 'llama4'.
 
-    :return: Response from the model and the timings.
+    :return: Response from the model, the timings and the extracted text.
     """
     logger.info(
         f"Testing {model_name} with images {image_paths} and recipient data {recipients_data}"
@@ -83,4 +83,4 @@ def test(
     logger.info(f"Elapsed time for {model_name}: {llama_time}")
     logger.info(f"Elapsed time combined: {combined_time}")
 
-    return response, Timings(combined_time, tesseract_time, llama_time)
+    return response, Timings(combined_time, tesseract_time, llama_time), extracted_text
