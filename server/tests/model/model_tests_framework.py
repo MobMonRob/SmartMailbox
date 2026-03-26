@@ -167,6 +167,7 @@ def check_response(model_response: str, test_case: TestCase, image_ids: List[int
 
     :param model_response: The response from the model.
     :param test_case: The test case to use.
+    :param image_ids: The IDs of the images.
     :return: ModelAnswerCheck.
     """
     logger.info("Checking response")
@@ -196,7 +197,7 @@ def check_response(model_response: str, test_case: TestCase, image_ids: List[int
 
     # Check Image ID
     logger.info("Checking best image ID")
-    image_err = check_image_id(image_ids[response.best_image_id], test_case)
+    image_err = check_image_id(image_ids, test_case,response.best_image_id)
     if image_err:
         err = f"Error at correct image ID check: {image_err}"
         logger.info(err)
@@ -257,14 +258,20 @@ def check_recipient_ids(recipient_ids: List[int], test_case: TestCase) -> str:
     return f"Provided recipient IDs do not match correct ids: {recipient_ids} != {correct_ids}"
 
 
-def check_image_id(image_id: int, test_case: TestCase) -> str:
+def check_image_id(image_ids: List[int], test_case: TestCase, image_idx: int) -> str:
     """
-    Check if the image id in the response matches the solution of the test case.
+    Check if the image idx in the response matches the solution of the test case.
 
-    :param image_id: The id of the image to check.
+    :param image_ids: The IDs of the images to check.
     :param test_case: The test case.
+    :param image_idx: The idx of the image to check.
     :return: Empty string if correct, else an error message.
     """
+    try:
+        image_id = image_ids[image_idx]
+    except IndexError:
+        return f"Image idx is out of range of image paths: {image_idx} >= {len(image_ids)}"
+
     if test_case.image_selection == ImageSelection.ALL:
         # best image is image quality PERFECT
         correct_image_id = get_image_id(test_case.letter_id, ImageQuality.PERFECT)

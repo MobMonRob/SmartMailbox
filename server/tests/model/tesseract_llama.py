@@ -2,7 +2,7 @@ import time
 from typing import List, Tuple
 import ollama
 import pytesseract
-from PIL.Image import Image
+from PIL import Image, ImageFile
 from ollama import ChatResponse
 
 from .db.model import Timings, CompleteRecipientData, ModelFamily, ModelResponse
@@ -37,7 +37,6 @@ def test(
 
 
     for image_idx, image_path in enumerate(image_paths):
-        from PIL import Image, ImageFile
         ImageFile.LOAD_TRUNCATED_IMAGES = True
         try:
             with Image.open(image_path) as img:
