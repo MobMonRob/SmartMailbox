@@ -3,7 +3,7 @@ from .model_tests_framework import run_tests
 import smtplib
 from email.message import EmailMessage
 import traceback
-import logger
+from .logger import logger
 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587  # Standard port for STARTTLS

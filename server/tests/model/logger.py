@@ -1,8 +1,6 @@
 import os
 import logging
 
-
-
 current_dir = os.path.dirname(os.path.abspath(__file__))
 log_path = os.path.join(current_dir, 'model_tests.log')
 
