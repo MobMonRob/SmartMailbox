@@ -60,6 +60,39 @@ python -m app.main
     - 1. llm answer for each image individually (Testing models against each other)
     - 2. llm answer for all 5 at once (Testing that capabilities do not get worse if low quality images are also part of the input)
 
+#### Run tests
+
+*One model*:
+
+MODEL_NAME: qwen3.2:2b, etc.
+TEST_TO_RUN: 1 | -5 | 20- | 34-65 | -6, 23-54, 70, 72- 
+
+```sh
+tmux new -s modeltests
+cd ~/SmartMailbox/server
+source .venv/bin/activate
+python -m tests.model.main MODEL_NAME [TESTS_TO_RUN]
+
+Ctrl+B
+d
+
+tmux attach -t modeltests
+```
+
+*All*:
+
+```sh
+tmux new -s modeltests
+cd ~/SmartMailbox/server
+source .venv/bin/activate
+python -m tests.model.run_all_tests
+
+Ctrl+B
+d
+
+tmux attach -t modeltests
+```
+
 #### Images
 
 mail types: postcard, letter, letter with window \

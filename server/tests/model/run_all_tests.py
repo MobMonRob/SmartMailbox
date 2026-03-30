@@ -21,7 +21,7 @@ RECIPIENT_EMAILS = ["mschelkle05@web.de", "jasminfoerstel@gmail.com"]
 DB_PATH = "app/db/database.db"
 
 def send_email(subject: str, body: str, err: str = ""):
-    logger.info(f"Sending {err if err else "Result"} email")
+    logger.info(f"Sending {"Error" if err else "Result"} email")
     msg = EmailMessage()
     msg.set_content(body + err)
     msg['Subject'] = subject
@@ -54,11 +54,15 @@ def send_email(subject: str, body: str, err: str = ""):
 
 def main():
     for model in ["qwen3.5:2b", "qwen3.5:4b", "qwen3.5:9b", "qwen3.5:27b", "qwen3.5:35b", "qwen3.5:122b", "llama4:scout", "llama3.2:1b", "llama3.2:3b"]:
+        logger.info(f"Testing model {model}")
         try:
             run_tests(model)
         except Exception as e:
-            send_email(f"ERROR: Error while running model test for {model}", f"Error: {e}\n\n" , traceback.format_exc())
-            return
+            trace = traceback.format_exc()
+            send_email(f"ERROR: Error while running model test for {model}", f"Error: {e}\n\n" , trace)
+            logger.error(f"Error while running model test for {model}: {e}\n{trace}")
+            logger.info("Continuing with next model")
+            continue
 
         send_email(f"COMPLETED: Model test completed for {model}", f"Model test completed for {model} without exception.")
 
