@@ -1,7 +1,9 @@
 import sys
 
+from .logger import setup_logging
 from .model_tests_framework import run_tests
-from .logger import logger
+
+setup_logging()
 
 def parse_test_range(tests_input: str) -> set[int]:
     tests = set()
@@ -38,7 +40,6 @@ def main():
     34-65
     1,69-
     """
-    logger.info("START")
     model = sys.argv[1]
 
     if len(sys.argv) == 3:
