@@ -64,7 +64,7 @@ def main():
     """
     model = sys.argv[1]
 
-    if len(sys.argv) ==3:
+    if len(sys.argv) == 3:
         tests = parse_test_range(sys.argv[2])
         run_tests(model,tests)
     else:
