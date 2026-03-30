@@ -1,5 +1,7 @@
 import logging
-
+import io
+import zipfile
+import os
 from .logger import setup_logging
 from .model_tests_framework import run_tests
 
@@ -14,8 +16,9 @@ logger = logging.getLogger()
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587  # Standard port for STARTTLS
 SENDER_EMAIL = "briefkaimusterkai@gmail.com"
-SENDER_PASSWORD = "briefkai123123"
+SENDER_PASSWORD = "ajmexyaujmrolwxy"
 RECIPIENT_EMAILS = ["mschelkle05@web.de", "jasminfoerstel@gmail.com"]
+DB_PATH = "app/db/database.db"
 
 def send_email(subject: str, body: str, err: str = ""):
     logger.info(f"Sending {err if err else "Result"} email")
@@ -26,16 +29,20 @@ def send_email(subject: str, body: str, err: str = ""):
     msg['To'] = ", ".join(RECIPIENT_EMAILS)
 
     try:
-        with open("../../app/db/database.db", 'rb') as f:
-            file_data = f.read()
-            file_name = "database.db"
+        if os.path.exists(DB_PATH):
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+                zf.write(DB_PATH, arcname="database.db")
 
-        msg.add_attachment(
-            file_data,
-            maintype='application',
-            subtype='octet-stream',
-            filename=file_name
-        )
+            msg.add_attachment(
+                zip_buffer.getvalue(),
+                maintype='application',
+                subtype='zip',
+                filename="database.zip"
+            )
+            logger.info("Database zipped and attached.")
+        else:
+            logger.warning("Database file not found, skipping attachment.")
 
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
