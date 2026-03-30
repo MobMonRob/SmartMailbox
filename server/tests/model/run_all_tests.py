@@ -21,7 +21,6 @@ def send_email(subject: str, body: str, err: str = ""):
     logger.info(f"Sending {err if err else "Result"} email")
     msg = EmailMessage()
     msg.set_content(body + err)
-    msg.add_attachment()
     msg['Subject'] = subject
     msg['From'] = SENDER_EMAIL
     msg['To'] = ", ".join(RECIPIENT_EMAILS)
