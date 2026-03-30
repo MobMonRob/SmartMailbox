@@ -1,4 +1,4 @@
-from server.tests.model.model_tests_framework import run_tests
+from .model_tests_framework import run_tests
 
 import smtplib
 from email.message import EmailMessage

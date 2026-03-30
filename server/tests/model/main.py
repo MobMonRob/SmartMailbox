@@ -1,6 +1,5 @@
 import sys
 import os
-from typing import List
 
 from .model_tests_framework import run_tests
 import logging
