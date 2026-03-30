@@ -6,11 +6,7 @@ from ollama import ChatResponse
 
 from .db.api import get_prompt
 from .db.model import Timings, CompleteRecipientData, ModelFamily, ModelResponse
-import logging
-
-
-logger = logging.getLogger(__name__)
-
+from .logger import logger
 
 def test(
     image_paths: List[str],
