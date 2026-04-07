@@ -231,6 +231,7 @@ def store_test_result(test_result: TestResult):
             test_result.extracted_text
         ],
     )
+    db.con.commit()
 
 
 def get_solution_recipient_ids(test_case_id: int) -> List[int]:
