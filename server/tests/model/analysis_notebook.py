@@ -1,7 +1,7 @@
 # %% [markdown]
 # # SmartMailbox Model Evaluation Analysis
 # This notebook analyzes the benchmark results comparing Native Vision-Language Models 
-# (Qwen3) against a two-step OCR + LLM pipeline (Tesseract + Llama).
+# (Qwen3.5) against a two-step OCR + LLM pipeline (Tesseract + Llama).
 
 # %%
 import os
@@ -13,7 +13,14 @@ import numpy as np
 
 # Set visual aesthetics
 sns.set_theme(style="whitegrid", palette="muted")
-plt.rcParams.update({'figure.figsize': (12, 7), 'font.size': 12})
+plt.rcParams.update({
+    'figure.figsize': (12, 7), 
+    'font.size': 12,
+    'figure.dpi': 300,       # High resolution for inline rendering
+    'savefig.dpi': 300,      # High resolution for saving (300 DPI is standard for print)
+    'savefig.format': 'svg', # Scalable vector format by default (or 'svg')
+    'savefig.bbox': 'tight'  # Ensures labels and legends are not cut off when saving
+})
 
 # %% [markdown]
 # ### 1. Data Loading & Preprocessing
@@ -54,10 +61,12 @@ con.close()
 # Extract numeric model size in billions of parameters (if applicable) for scaling laws
 def extract_params(name):
     import re
+    if 'scout' in str(name).lower():
+        return 109.0
     match = re.search(r':(\d+)b', name)
     if match:
         return float(match.group(1))
-    return None
+    return 0.0 # Default for edge models without 'b' in name
 
 df['param_size_b'] = df['model_name'].apply(extract_params)
 
@@ -72,6 +81,12 @@ print(f"Removed {len(outliers)} outliers:")
 print(outliers.to_string())
 df = df[df["total_time"] < q_hi]
 
+# Sort models by Family then Size, and make model_name categorical to enforce this order globally
+unique_models = df[['model_name', 'model_family', 'param_size_b']].drop_duplicates()
+unique_models = unique_models.sort_values(by=['model_family', 'param_size_b'])
+ordered_model_names = unique_models['model_name'].tolist()
+df['model_name'] = pd.Categorical(df['model_name'], categories=ordered_model_names, ordered=True)
+
 df.head()
 
 # %% [markdown]
@@ -79,19 +94,19 @@ df.head()
 # Let's look at the absolute success rate grouped by model.
 
 # %%
-agg_df = df.groupby('model_name').agg(
+agg_df = df.groupby('model_name', observed=False).agg(
     accuracy=('is_perfect_run', 'mean'),
     avg_time=('total_time', 'mean'),
     family=('model_family', 'first')
 ).reset_index()
 
 # Sort by accuracy
-agg_df = agg_df.sort_values('accuracy', ascending=False)
+agg_df = agg_df.sort_values('model_name')
 
 plt.figure(figsize=(10, 6))
 ax = sns.barplot(data=agg_df, x='accuracy', y='model_name', hue='family', dodge=False)
-ax.set_title("Overall Accuracy by Model (Strict Evaluation)", fontweight='bold')
-ax.set_xlabel("Accuracy Rate (1.0 = 100%)")
+ax.set_title("Overall Accuracy", fontweight='bold')
+ax.set_xlabel("Accuracy")
 ax.set_ylabel("")
 ax.set_xlim(0, 1.05)
 
@@ -102,6 +117,7 @@ for p in ax.patches:
         ax.text(width + 0.01, p.get_y() + p.get_height()/2., f'{width:.1%}', ha="left", va="center")
 
 plt.tight_layout()
+# plt.savefig("overall_accuracy.svg")
 plt.show()
 
 # %% [markdown]
@@ -109,27 +125,34 @@ plt.show()
 # How much overhead does the Tesseract OCR layer add compared to a native VLM approach?
 
 # %%
-time_df = df.groupby('model_name')[['tesseract_time', 'llama_time', 'total_time']].mean().reset_index()
-time_df = time_df.sort_values('total_time')
+time_df = df.groupby('model_name', observed=False)[['tesseract_time', 'llama_time', 'total_time']].mean().reset_index()
+time_df = time_df.sort_values('model_name')
 
 fig, ax = plt.subplots(figsize=(10, 6))
 
-# Qwen uses total_time natively. Llama models use tesseract + llama.
-# We will plot Tesseract as bottom bar, Llama as top bar.
-qwen_mask = time_df['model_name'].str.contains('qwen')
-llama_mask = time_df['model_name'].str.contains('llama')
+time_df['bar1_tesseract'] = time_df['tesseract_time'].fillna(0)
+time_df['bar2_llm'] = time_df.apply(lambda r: r['total_time'] if pd.isnull(r['llama_time']) else r['llama_time'], axis=1)
 
-# Plot Qwen Models (Single block)
-ax.barh(time_df[qwen_mask]['model_name'], time_df[qwen_mask]['total_time'], color='#4C72B0', label='Native VLM Time (Qwen)')
+y_pos = np.arange(len(time_df))
+model_names_str = time_df['model_name'].astype(str).tolist()
 
-# Plot Llama Models (Stacked)
-ax.barh(time_df[llama_mask]['model_name'], time_df[llama_mask]['tesseract_time'], color='#DD8452', label='OCR Time (Tesseract)')
-ax.barh(time_df[llama_mask]['model_name'], time_df[llama_mask]['llama_time'], left=time_df[llama_mask]['tesseract_time'], color='#55A868', label='LLM Time (Llama)')
+ax.barh(y_pos, time_df['bar1_tesseract'], color='#DD8452', label='OCR Time (Tesseract)')
+ax.barh(y_pos, time_df['bar2_llm'], left=time_df['bar1_tesseract'], color='#4C72B0', label='LLM/VLM Time (Llama/Qwen)')
 
-ax.set_title("Average Inference Time Breakdown", fontweight='bold')
+ax.set_yticks(y_pos)
+ax.set_yticklabels(model_names_str)
+ax.invert_yaxis()  # Put the first grouped model at the top
+
+# Add text for total time
+for i, total in enumerate(time_df['total_time']):
+    if pd.notnull(total):
+        ax.text(total + 0.2, i, f'{total:.1f}s', ha='left', va='center')
+
+ax.set_title("Average Inference Time", fontweight='bold')
 ax.set_xlabel("Time (seconds)")
 ax.legend(loc='lower right')
 plt.tight_layout()
+# plt.savefig("average_inference_time.svg")
 plt.show()
 
 # %% [markdown]
@@ -139,10 +162,11 @@ plt.show()
 # %%
 plt.figure(figsize=(12, 6))
 sns.boxplot(data=df, x='total_time', y='model_name', hue='model_family', showfliers=True)
-plt.title("Inference Time Distribution (Checking for long-tail outliers)", fontweight='bold')
+plt.title("Inference Time Distribution", fontweight='bold')
 plt.xlabel("Total Time (seconds)")
 plt.ylabel("")
 plt.tight_layout()
+# plt.savefig("inference_time_distribution.svg")
 plt.show()
 
 # %% [markdown]
@@ -150,7 +174,7 @@ plt.show()
 # How well do different models handle bad camera captures (blurry / cut off)?
 
 # %%
-quality_df = df.groupby(['model_name', 'image_selection'])['is_perfect_run'].mean().unstack()
+quality_df = df.groupby(['model_name', 'image_selection'], observed=False)['is_perfect_run'].mean().unstack()
 
 # Optional: order the columns logically if they follow this convention
 ordered_cols = ['PERFECT', 'SLIGHTLY_BLURRED', 'VERY_BLURRED', 'CUT_OFF', 'ALL']
@@ -163,6 +187,7 @@ plt.title("Model Robustness Heatmap: Accuracy vs. Image Quality", fontweight='bo
 plt.ylabel("")
 plt.xlabel("Image Condition")
 plt.tight_layout()
+# plt.savefig("model_robustness_heatmap.svg")
 plt.show()
 
 # %% [markdown]
@@ -173,34 +198,58 @@ plt.show()
 def categorize_failure(row):
     if row['is_perfect_run']:
         return 'Success'
-    elif not row['match_found']:
-        return 'Failed: Invalid JSON / Schema'
-    elif not row['correct_recipient_ids']:
-        return 'Failed: Wrong Recipient'
-    elif not row['correct_best_image_id']:
-        return 'Failed: Wrong Best Image'
+    elif row['error_msg']:
+        if row['error_msg'].startswith('Error at correct recipients ID check'):
+            return 'Failed: Wrong Recipient'
+        elif row['error_msg'].startswith('Error at correct image ID check'):
+            return 'Failed: Wrong Best Image'
+        elif row['error_msg'].startswith('JSON/Schema Error'):
+            return 'Failed: Invalid JSON / Schema'
+        else:
+            return 'Failed: Other'
     else:
         return 'Failed: Other'
 
 df['outcome'] = df.apply(categorize_failure, axis=1)
 
-outcome_counts = df.groupby(['model_name', 'outcome']).size().unstack(fill_value=0)
-# Convert to percentages
-outcome_pct = outcome_counts.div(outcome_counts.sum(axis=1), axis=0) * 100
+outcome_counts = df.groupby(['model_name', 'outcome'], observed=False).size().unstack(fill_value=0)
 
-# Sort by Success rate
-if 'Success' in outcome_pct.columns:
-    outcome_pct = outcome_pct.sort_values('Success')
+# Isolate failures only
+if 'Success' in outcome_counts.columns:
+    outcome_counts = outcome_counts.drop(columns=['Success'])
 
-outcome_pct.plot(kind='barh', stacked=True, figsize=(12, 7),
-                 color=['#D62728', '#E66101', '#F4A582', '#2CA02C'])
+# Convert to percentages relative to total failures per model
+outcome_pct = outcome_counts.div(outcome_counts.sum(axis=1).replace(0, np.nan), axis=0) * 100
+outcome_pct = outcome_pct.fillna(0)
 
-plt.title("Failure Mode Distribution per Model", fontweight='bold')
-plt.xlabel("Percentage of Test Cases (%)")
-plt.ylabel("")
+# Enforce consistent column coloring and ordering
+desired_order = ['Failed: Wrong Recipient', 'Failed: Wrong Best Image', 'Failed: Invalid JSON / Schema','Failed: Other']
+desired_order.reverse()
+existing_cols = [c for c in desired_order if c in outcome_pct.columns]
+outcome_pct = outcome_pct[existing_cols]
+
+color_map = {
+    'Failed: Invalid JSON / Schema': '#D62728',
+    'Failed: Wrong Recipient': '#E66101',
+    'Failed: Wrong Best Image': '#F4A582',
+    'Failed: Other': '#7F7F7F'
+}
+plot_colors = [color_map[c] for c in outcome_pct.columns]
+
+ax_fail = outcome_pct.plot(kind='bar', stacked=True, color=plot_colors, figsize=(12, 7))
+
+# Add percentages inside the bars for readability
+for c in ax_fail.containers:
+    labels = [f'{v.get_height():.1f}%' if v.get_height() > 0.0 else '' for v in c]
+    ax_fail.bar_label(c, labels=labels, label_type='center', fontsize=9, color='white', weight='bold')
+
+plt.title("Failure Distribution", fontweight='bold')
+plt.xlabel("Model")
+plt.ylabel("Percentage of Failures (%)")
+plt.xticks(rotation=45, ha='right')
 plt.legend(title='Outcome', bbox_to_anchor=(1.05, 1), loc='upper left')
-plt.xlim(0, 100)
 plt.tight_layout()
+# plt.savefig("failure_distribution.svg")
 plt.show()
 
 # %% [markdown]
@@ -208,8 +257,8 @@ plt.show()
 # Identify the optimal models for production based on edge-device constraints.
 
 # %%
-plt.figure(figsize=(10, 6))
-sns.scatterplot(data=agg_df, x='avg_time', y='accuracy', hue='family', s=150, style='family', markers=['o', 's'])
+plt.figure(figsize=(13, 7))
+sns.scatterplot(data=agg_df, x='avg_time', y='accuracy', hue='family', s=150, style='family')
 
 # Annotate points
 for i, row in agg_df.iterrows():
@@ -218,36 +267,49 @@ for i, row in agg_df.iterrows():
                      (row['avg_time'], row['accuracy']),
                      xytext=(8, -10), textcoords='offset points', fontsize=9)
 
-plt.title("Pareto Frontier: Speed vs. Accuracy Trade-off", fontweight='bold')
-plt.xlabel("Average Inference Time (seconds) ➔ (Lower is Better)")
-plt.ylabel("Accuracy ➔ (Higher is Better)")
+plt.title("Speed vs. Accuracy", fontweight='bold')
+plt.xlabel("Average Inference Time (seconds)")
+plt.ylabel("Accuracy")
 plt.ylim(0, 1.05)
 plt.grid(True, linestyle='--', alpha=0.7)
 plt.tight_layout()
+# plt.savefig("speed_vs_accuracy.svg")
 plt.show()
 
 # %% [markdown]
-# ### 8. Scaling Laws (Qwen Family)
+# ### 8. Scaling Laws (Model Size vs Accuracy)
 # Performance returns as model parameter count increases.
 
 # %%
 qwen_df = agg_df[(agg_df['family'] == 'ModelFamily.Qwen3') | (agg_df['model_name'].astype(str).str.contains('qwen'))].copy()
 qwen_df['params'] = qwen_df['model_name'].astype(str).apply(extract_params)
-qwen_df = qwen_df.dropna(subset=['params']).sort_values('params')
+qwen_df = qwen_df[qwen_df['params'] > 0].dropna(subset=['params']).sort_values('params')
 
-if not qwen_df.empty:
-    fig, ax1 = plt.subplots(figsize=(9, 5))
+llama_df = agg_df[(agg_df['family'] == 'ModelFamily.Llama') | (agg_df['model_name'].astype(str).str.contains('llama'))].copy()
+llama_df['params'] = llama_df['model_name'].astype(str).apply(extract_params)
+llama_df = llama_df[llama_df['params'] > 0].dropna(subset=['params']).sort_values('params')
+
+if not qwen_df.empty or not llama_df.empty:
+    fig, ax1 = plt.subplots(figsize=(12, 7))
     
-    ax1.plot(qwen_df['params'], qwen_df['accuracy'], marker='o', color='#2CA02C', linewidth=2, markersize=8)
+    if not qwen_df.empty:
+        ax1.plot(qwen_df['params'], qwen_df['accuracy'], marker='o', color='#2CA02C', linewidth=2, markersize=10, label='Qwen3.5 (Native VLM)')
+        for i, row in qwen_df.iterrows():
+            ax1.annotate(f"{row['accuracy']:.1%}", (row['params'], row['accuracy']),
+                         xytext=(0, 10), textcoords='offset points', ha='center', fontsize=10)
+                         
+    if not llama_df.empty:
+        ax1.plot(llama_df['params'], llama_df['accuracy'], marker='s', color='#DD8452', linewidth=2, markersize=10, label='Llama + Tesseract')
+        for i, row in llama_df.iterrows():
+            ax1.annotate(f"{row['accuracy']:.1%}", (row['params'], row['accuracy']),
+                         xytext=(0, -15), textcoords='offset points', ha='center', fontsize=10)
 
-    for i, row in qwen_df.iterrows():
-        ax1.annotate(f"{row['accuracy']:.1%}", (row['params'], row['accuracy']),
-                     xytext=(0, 10), textcoords='offset points', ha='center', fontsize=10)
-
-    ax1.set_title("Scaling Laws: Qwen Parameter Count vs Accuracy", fontweight='bold')
+    ax1.set_title("Model Scaling", fontweight='bold')
     ax1.set_xlabel("Parameters (Billions) - Log Scale")
     ax1.set_ylabel("Accuracy Rate")
     ax1.set_xscale('log')
+    ax1.legend(loc='lower right')
     plt.grid(True, which="both", ls="--", alpha=0.5)
     plt.tight_layout()
+    # plt.savefig("model_scaling.svg")
     plt.show()
