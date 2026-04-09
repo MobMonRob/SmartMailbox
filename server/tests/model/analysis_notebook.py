@@ -41,6 +41,8 @@ SELECT
     m.name AS model_name,
     m.family AS model_family,
     tc.image_selection,
+    l.writing_style,
+    l.format AS letter_type,
     mtr.time AS total_time,
     mtr.tesseract_time,
     mtr.llama_time,
@@ -52,7 +54,8 @@ SELECT
 FROM model_test_results mtr
 JOIN model_tests mt ON mtr.model_test_id = mt.id
 JOIN models m ON mt.model = m.id
-JOIN test_cases tc ON mt.test_case_id = tc.id;
+JOIN test_cases tc ON mt.test_case_id = tc.id
+JOIN letters l ON tc.letter_id = l.id;
 """
 
 df = pd.read_sql_query(query, con)
@@ -61,8 +64,6 @@ con.close()
 # Extract numeric model size in billions of parameters (if applicable) for scaling laws
 def extract_params(name):
     import re
-    if 'scout' in str(name).lower():
-        return 109.0
     match = re.search(r':(\d+)b', name)
     if match:
         return float(match.group(1))
@@ -75,7 +76,7 @@ bool_cols = ['match_found', 'correct_recipient_ids', 'correct_best_image_id', 'i
 for col in bool_cols:
     df[col] = df[col].astype(bool)
 
-q_hi  = df["total_time"].quantile(0.99)
+q_hi  = df["total_time"].quantile(0.995)
 outliers = df[df["total_time"] >= q_hi]
 print(f"Removed {len(outliers)} outliers:")
 print(outliers.to_string())
@@ -313,3 +314,62 @@ if not qwen_df.empty or not llama_df.empty:
     plt.tight_layout()
     # plt.savefig("model_scaling.svg")
     plt.show()
+
+
+# %% [markdown]
+# ### 9. Performance by Document Type & Writing Style
+# Analyzing how different combinations of letter types and writing styles impact accuracy.
+
+# %%
+# Create a combined category for the heatmap
+df['doc_style'] = df['letter_type'] + "\n(" + df['writing_style'] + ")"
+
+# 9.1 Heatmap for combined interactions
+style_df = df.groupby(['model_name', 'doc_style'], observed=False)['is_perfect_run'].mean().unstack()
+
+plt.figure(figsize=(14, 8))
+sns.heatmap(style_df, annot=True, fmt=".1%", cmap="RdYlGn", vmin=0, vmax=1, 
+            cbar_kws={'label': 'Accuracy'})
+plt.title("Performance Matrix: Model vs. Letter Format & Style", fontweight='bold')
+plt.ylabel("Model")
+plt.xlabel("Letter Format (Writing Style)")
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+# plt.savefig("performance_matrix_doc_style.svg")
+plt.show()
+
+# %% [markdown]
+# ### 10. Main Effects: Isolated Impact of Type and Style
+# Using statistical point plots to show the isolated impact of writing style and letter type.
+
+# %%
+fig, axes = plt.subplots(1, 2, figsize=(16, 6), sharey=True)
+
+# Dynamically adjust pointplot parameters to avoid ZeroDivisionError if only 1 model family is present
+n_families = df['model_family'].nunique()
+dodge_val = True if n_families > 1 else False
+plot_markers = ['o', 's'][:n_families] if n_families > 1 else ['o']
+plot_linestyles = ['-', '--'][:n_families] if n_families > 1 else ['-']
+
+# Plot 1: Effect of Writing Style
+sns.pointplot(data=df, x='writing_style', y='is_perfect_run', hue='model_family', 
+              dodge=dodge_val, markers=plot_markers, linestyles=plot_linestyles, errorbar=None, ax=axes[0])
+axes[0].set_title("Main Effect: Writing Style vs Accuracy", fontweight='bold')
+axes[0].set_xlabel("Writing Style")
+axes[0].set_ylabel("Accuracy Rate")
+axes[0].set_ylim(0, 1.05)
+axes[0].grid(True, linestyle='--', alpha=0.6)
+
+# Plot 2: Effect of Letter Type
+sns.pointplot(data=df, x='letter_type', y='is_perfect_run', hue='model_family', 
+              dodge=dodge_val, markers=plot_markers, linestyles=plot_linestyles, errorbar=None, ax=axes[1])
+axes[1].set_title("Main Effect: Letter Type vs Accuracy", fontweight='bold')
+axes[1].set_xlabel("Letter Type")
+axes[1].set_ylabel("")
+axes[1].grid(True, linestyle='--', alpha=0.6)
+if axes[1].legend_ is not None:
+    axes[1].legend_.remove() # Remove duplicate legend
+
+plt.tight_layout()
+# plt.savefig("main_effects_type_style.svg")
+plt.show()

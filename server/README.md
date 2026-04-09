@@ -174,7 +174,7 @@ tbd
 
 ### Models
 - id (Int, key)
-- name (Text) # llama3.2:1b, llama3.2:3b, llama4:scout, qwen3.5:9b(2b/4b/27b/35b/122b)
+- name (Text) # llama3.2:1b, llama3.2:3b, llama3.3:70b, qwen3.5:9b(2b/4b/27b/35b/122b)
 - family ("Qwen3" | "Llama")
 
 ### TestCases

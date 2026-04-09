@@ -53,7 +53,7 @@ def send_email(subject: str, body: str, err: str = ""):
         logger.error(f"Error while sending email: {e}")
 
 def main():
-    for model in ["qwen3.5:2b", "qwen3.5:4b", "qwen3.5:9b", "qwen3.5:27b", "qwen3.5:35b", "qwen3.5:122b", "llama4:scout", "llama3.2:1b", "llama3.2:3b"]:
+    for model in ["qwen3.5:2b", "qwen3.5:4b", "qwen3.5:9b", "qwen3.5:27b", "qwen3.5:35b", "qwen3.5:122b", "llama3.3:70b", "llama3.2:1b", "llama3.2:3b"]:
         logger.info(f"Testing model {model}")
         try:
             run_tests(model)
