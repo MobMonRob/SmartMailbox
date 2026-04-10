@@ -41,6 +41,7 @@ SELECT
     m.name AS model_name,
     m.family AS model_family,
     tc.image_selection,
+    l.address,
     l.writing_style,
     l.format AS letter_type,
     mtr.time AS total_time,
@@ -383,4 +384,39 @@ if axes[1].legend_ is not None:
 
 plt.tight_layout()
 # plt.savefig("main_effects_type_style.svg")
+plt.show()
+
+# %% [markdown]
+# ### 11. Accuracy by Address
+# This chart shows the accuracy for each unique address to see if some are inherently harder to recognize.
+
+# %%
+# To make the y-axis labels readable, we'll shorten the addresses
+df['short_address'] = df['address'].str.split('\n').str[0]
+
+# plt.figure(figsize=(12, 8))
+# sns.barplot(data=df, y='short_address', x='is_perfect_run', hue='model_family', errorbar=None)
+# plt.title("Accuracy by Address", fontweight='bold')
+# plt.xlabel("Accuracy Rate")
+# plt.ylabel("Address (First Line)")
+# plt.xlim(0, 1.05)
+# plt.grid(True, linestyle='--', alpha=0.6)
+# plt.tight_layout()
+# # plt.savefig("accuracy_by_address.svg")
+# plt.show()
+#
+# df['doc_style'] = df['letter_type'] + "\n(" + df['writing_style'] + ")"
+
+# 9.1 Heatmap for combined interactions
+style_df = df.groupby(['model_name', 'short_address'], observed=False)['is_perfect_run'].mean().unstack()
+
+plt.figure(figsize=(14, 8))
+sns.heatmap(style_df, annot=True, fmt=".1%", cmap="RdYlGn", vmin=0, vmax=1,
+            cbar_kws={'label': 'Accuracy'})
+plt.title("Performance Matrix: Model vs. Address", fontweight='bold')
+plt.ylabel("Model")
+plt.xlabel("Address")
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+# plt.savefig("performance_matrix_doc_style.svg")
 plt.show()
