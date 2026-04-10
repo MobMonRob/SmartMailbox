@@ -76,6 +76,17 @@ bool_cols = ['match_found', 'correct_recipient_ids', 'correct_best_image_id', 'i
 for col in bool_cols:
     df[col] = df[col].astype(bool)
 
+# Ignore Llama tests without Tesseract (Native Llama) as they are not part of the paper
+is_llama_native = df['model_name'].astype(str).str.lower().str.contains('llama') & (df['tesseract_time'].isnull() | (df['tesseract_time'] == 0))
+df = df[~is_llama_native].copy()
+
+is_llama = df['model_name'].astype(str).str.lower().str.contains('llama')
+is_qwen = df['model_name'].astype(str).str.lower().str.contains('qwen')
+
+df.loc[is_llama, 'model_name'] = df.loc[is_llama, 'model_name'].astype(str)
+df.loc[is_llama, 'model_family'] = 'Llama + Tesseract'
+df.loc[is_qwen, 'model_family'] = 'Qwen'
+
 q_hi  = df["total_time"].quantile(0.995)
 outliers = df[df["total_time"] >= q_hi]
 print(f"Removed {len(outliers)} outliers:")
@@ -282,26 +293,26 @@ plt.show()
 # Performance returns as model parameter count increases.
 
 # %%
-qwen_df = agg_df[(agg_df['family'] == 'ModelFamily.Qwen3') | (agg_df['model_name'].astype(str).str.contains('qwen'))].copy()
+qwen_df = agg_df[agg_df['family'] == 'Qwen'].copy()
 qwen_df['params'] = qwen_df['model_name'].astype(str).apply(extract_params)
 qwen_df = qwen_df[qwen_df['params'] > 0].dropna(subset=['params']).sort_values('params')
 
-llama_df = agg_df[(agg_df['family'] == 'ModelFamily.Llama') | (agg_df['model_name'].astype(str).str.contains('llama'))].copy()
-llama_df['params'] = llama_df['model_name'].astype(str).apply(extract_params)
-llama_df = llama_df[llama_df['params'] > 0].dropna(subset=['params']).sort_values('params')
+llama_ocr_df = agg_df[agg_df['family'] == 'Llama + Tesseract'].copy()
+llama_ocr_df['params'] = llama_ocr_df['model_name'].astype(str).apply(extract_params)
+llama_ocr_df = llama_ocr_df[llama_ocr_df['params'] > 0].dropna(subset=['params']).sort_values('params')
 
-if not qwen_df.empty or not llama_df.empty:
+if not qwen_df.empty or not llama_ocr_df.empty:
     fig, ax1 = plt.subplots(figsize=(12, 7))
-    
+
     if not qwen_df.empty:
         ax1.plot(qwen_df['params'], qwen_df['accuracy'], marker='o', color='#2CA02C', linewidth=2, markersize=10, label='Qwen3.5 (Native VLM)')
         for i, row in qwen_df.iterrows():
             ax1.annotate(f"{row['accuracy']:.1%}", (row['params'], row['accuracy']),
                          xytext=(0, 10), textcoords='offset points', ha='center', fontsize=10)
-                         
-    if not llama_df.empty:
-        ax1.plot(llama_df['params'], llama_df['accuracy'], marker='s', color='#DD8452', linewidth=2, markersize=10, label='Llama + Tesseract')
-        for i, row in llama_df.iterrows():
+
+    if not llama_ocr_df.empty:
+        ax1.plot(llama_ocr_df['params'], llama_ocr_df['accuracy'], marker='s', color='#DD8452', linewidth=2, markersize=10, label='Llama + Tesseract')
+        for i, row in llama_ocr_df.iterrows():
             ax1.annotate(f"{row['accuracy']:.1%}", (row['params'], row['accuracy']),
                          xytext=(0, -15), textcoords='offset points', ha='center', fontsize=10)
 
@@ -348,8 +359,8 @@ fig, axes = plt.subplots(1, 2, figsize=(16, 6), sharey=True)
 # Dynamically adjust pointplot parameters to avoid ZeroDivisionError if only 1 model family is present
 n_families = df['model_family'].nunique()
 dodge_val = True if n_families > 1 else False
-plot_markers = ['o', 's'][:n_families] if n_families > 1 else ['o']
-plot_linestyles = ['-', '--'][:n_families] if n_families > 1 else ['-']
+plot_markers = ['o', 's', '^', 'D'][:n_families] if n_families > 1 else ['o']
+plot_linestyles = ['-', '--', ':', '-.'][:n_families] if n_families > 1 else ['-']
 
 # Plot 1: Effect of Writing Style
 sns.pointplot(data=df, x='writing_style', y='is_perfect_run', hue='model_family', 
