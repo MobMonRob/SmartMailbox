@@ -130,7 +130,7 @@ for p in ax.patches:
         ax.text(width + 0.01, p.get_y() + p.get_height()/2., f'{width:.1%}', ha="left", va="center")
 
 plt.tight_layout()
-# plt.savefig("overall_accuracy.svg")
+plt.savefig("server/tests/model/plots/overall_accuracy.svg")
 plt.show()
 
 # %% [markdown]
@@ -165,7 +165,7 @@ ax.set_title("Average Inference Time", fontweight='bold')
 ax.set_xlabel("Time (seconds)")
 ax.legend(loc='lower right')
 plt.tight_layout()
-# plt.savefig("average_inference_time.svg")
+plt.savefig("server/tests/model/plots/average_inference_time.svg")
 plt.show()
 
 # %% [markdown]
@@ -179,7 +179,7 @@ plt.title("Inference Time Distribution", fontweight='bold')
 plt.xlabel("Total Time (seconds)")
 plt.ylabel("")
 plt.tight_layout()
-# plt.savefig("inference_time_distribution.svg")
+plt.savefig("server/tests/model/plots/inference_time_distribution.svg")
 plt.show()
 
 # %% [markdown]
@@ -200,7 +200,7 @@ plt.title("Model Robustness Heatmap: Accuracy vs. Image Quality", fontweight='bo
 plt.ylabel("")
 plt.xlabel("Image Condition")
 plt.tight_layout()
-# plt.savefig("model_robustness_heatmap.svg")
+plt.savefig("server/tests/model/plots/model_robustness_heatmap.svg")
 plt.show()
 
 # %% [markdown]
@@ -262,7 +262,7 @@ plt.ylabel("Percentage of Failures (%)")
 plt.xticks(rotation=45, ha='right')
 plt.legend(title='Outcome', bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
-# plt.savefig("failure_distribution.svg")
+plt.savefig("server/tests/model/plots/failure_distribution.svg")
 plt.show()
 
 # %% [markdown]
@@ -286,7 +286,7 @@ plt.ylabel("Accuracy")
 plt.ylim(0, 1.05)
 plt.grid(True, linestyle='--', alpha=0.7)
 plt.tight_layout()
-# plt.savefig("speed_vs_accuracy.svg")
+plt.savefig("server/tests/model/plots/speed_vs_accuracy.svg")
 plt.show()
 
 # %% [markdown]
@@ -324,7 +324,7 @@ if not qwen_df.empty or not llama_ocr_df.empty:
     ax1.legend(loc='lower right')
     plt.grid(True, which="both", ls="--", alpha=0.5)
     plt.tight_layout()
-    # plt.savefig("model_scaling.svg")
+    plt.savefig("server/tests/model/plots/model_scaling.svg")
     plt.show()
 
 
@@ -347,7 +347,7 @@ plt.ylabel("Model")
 plt.xlabel("Letter Format (Writing Style)")
 plt.xticks(rotation=45, ha='right')
 plt.tight_layout()
-# plt.savefig("performance_matrix_doc_style.svg")
+plt.savefig("server/tests/model/plots/model_vs_letter_format.svg")
 plt.show()
 
 # %% [markdown]
@@ -383,7 +383,7 @@ if axes[1].legend_ is not None:
     axes[1].legend_.remove() # Remove duplicate legend
 
 plt.tight_layout()
-# plt.savefig("main_effects_type_style.svg")
+plt.savefig("server/tests/model/plots/accuracy_by_letter_type.svg")
 plt.show()
 
 # %% [markdown]
@@ -393,23 +393,9 @@ plt.show()
 # %%
 # To make the y-axis labels readable, we'll shorten the addresses
 df['short_address'] = df['address'].str.split('\n').str[0]
-
-# plt.figure(figsize=(12, 8))
-# sns.barplot(data=df, y='short_address', x='is_perfect_run', hue='model_family', errorbar=None)
-# plt.title("Accuracy by Address", fontweight='bold')
-# plt.xlabel("Accuracy Rate")
-# plt.ylabel("Address (First Line)")
-# plt.xlim(0, 1.05)
-# plt.grid(True, linestyle='--', alpha=0.6)
-# plt.tight_layout()
-# # plt.savefig("accuracy_by_address.svg")
-# plt.show()
-#
-# df['doc_style'] = df['letter_type'] + "\n(" + df['writing_style'] + ")"
-
-# 9.1 Heatmap for combined interactions
 style_df = df.groupby(['model_name', 'short_address'], observed=False)['is_perfect_run'].mean().unstack()
 
+# 9.1 Heatmap for combined interactions
 plt.figure(figsize=(14, 8))
 sns.heatmap(style_df, annot=True, fmt=".1%", cmap="RdYlGn", vmin=0, vmax=1,
             cbar_kws={'label': 'Accuracy'})
@@ -418,5 +404,5 @@ plt.ylabel("Model")
 plt.xlabel("Address")
 plt.xticks(rotation=45, ha='right')
 plt.tight_layout()
-# plt.savefig("performance_matrix_doc_style.svg")
+plt.savefig("server/tests/model/plots/accuracy_by_address.svg")
 plt.show()
