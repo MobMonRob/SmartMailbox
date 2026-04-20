@@ -2,13 +2,22 @@ import sqlite3
 from typing import List
 
 from server.tests.model.db.api import get_image_id
-from server.tests.model.db.model import TestCase, ModelResponse, ModelAnswerCheck, ImageSelection, ImageQuality
+from server.tests.model.db.model import (
+    TestCase,
+    ModelResponse,
+    ModelAnswerCheck,
+    ImageSelection,
+    ImageQuality,
+)
 from server.tests.model.model_tests_framework import get_image_paths_and_ids
 
 # Path to the SQLite database file
-DATABASE_PATH = 'C:/Programming/studienarbeit/SmartMailbox/server/app/db/database.db'
+DATABASE_PATH = "C:/Programming/studienarbeit/SmartMailbox/server/app/db/database.db"
 
-def check_response(model_response: str, test_case: TestCase, image_ids: List[int]) -> ModelAnswerCheck:
+
+def check_response(
+    model_response: str, test_case: TestCase, image_ids: List[int]
+) -> ModelAnswerCheck:
     try:
         response = ModelResponse.model_validate_json(model_response)
     except Exception as e:
@@ -44,6 +53,7 @@ def check_response(model_response: str, test_case: TestCase, image_ids: List[int
         error_msg="\n".join(errors),
     )
 
+
 def check_recipient_ids(recipient_ids: List[int]) -> str:
     correct_ids = [6]
 
@@ -73,7 +83,9 @@ def check_image_id(image_ids: List[int], test_case: TestCase, image_idx: int) ->
     try:
         image_id = image_ids[image_idx]
     except IndexError:
-        return f"Image idx is out of range of image paths: {image_idx} >= {len(image_ids)}"
+        return (
+            f"Image idx is out of range of image paths: {image_idx} >= {len(image_ids)}"
+        )
 
     if test_case.image_selection == ImageSelection.ALL:
         # best image is image quality PERFECT
@@ -91,6 +103,7 @@ def check_image_id(image_ids: List[int], test_case: TestCase, image_idx: int) ->
 
     return f"Provided image ID does not match correct image ID: {image_id} != {correct_image_id}"
 
+
 def update_database():
     """
     Updates the database to correct the recipient_id for Olaf's letters.
@@ -102,7 +115,9 @@ def update_database():
         cursor = con.cursor()
 
         # 1. Get all letter_ids for Olaf's address
-        olaf_address = "Olaf Jürgen Schmidt\\nGoethestraße 42b\\n70176 Stuttgart\\nDeutschland"
+        olaf_address = (
+            "Olaf Jürgen Schmidt\\nGoethestraße 42b\\n70176 Stuttgart\\nDeutschland"
+        )
         cursor.execute("SELECT id FROM letters WHERE address = ?", [olaf_address])
         letter_ids = [row["id"] for row in cursor.fetchall()]
         print(f"Found {len(letter_ids)} letter_ids for Olaf's address: {letter_ids}")
@@ -112,8 +127,10 @@ def update_database():
             return
 
         # 2. Get all test_case_ids for the letter_ids
-        placeholders = ','.join('?' for _ in letter_ids)
-        cursor.execute(f"SELECT id FROM test_cases WHERE letter_id IN ({placeholders})", letter_ids)
+        placeholders = ",".join("?" for _ in letter_ids)
+        cursor.execute(
+            f"SELECT id FROM test_cases WHERE letter_id IN ({placeholders})", letter_ids
+        )
         test_case_ids = [row["id"] for row in cursor.fetchall()]
         print(f"Found {len(test_case_ids)} test_case_ids: {test_case_ids}")
 
@@ -122,13 +139,21 @@ def update_database():
             return
 
         # 3. Update recipient_id in test_case_solutions_correct_recipients
-        placeholders = ','.join('?' for _ in test_case_ids)
-        cursor.execute(f"UPDATE test_case_solutions_correct_recipients SET recipient_id = 6 WHERE test_case_id IN ({placeholders}) AND recipient_id = 7", test_case_ids)
-        print(f"{cursor.rowcount} rows updated in test_case_solutions_correct_recipients.")
+        placeholders = ",".join("?" for _ in test_case_ids)
+        cursor.execute(
+            f"UPDATE test_case_solutions_correct_recipients SET recipient_id = 6 WHERE test_case_id IN ({placeholders}) AND recipient_id = 7",
+            test_case_ids,
+        )
+        print(
+            f"{cursor.rowcount} rows updated in test_case_solutions_correct_recipients."
+        )
 
         # 4. Get all model_test_ids for the test_case_ids
-        placeholders = ','.join('?' for _ in test_case_ids)
-        cursor.execute(f"SELECT id FROM model_tests WHERE test_case_id IN ({placeholders})", test_case_ids)
+        placeholders = ",".join("?" for _ in test_case_ids)
+        cursor.execute(
+            f"SELECT id FROM model_tests WHERE test_case_id IN ({placeholders})",
+            test_case_ids,
+        )
         model_test_ids = [row["id"] for row in cursor.fetchall()]
         print(f"Found {len(model_test_ids)} model_test_ids: {model_test_ids}")
 
@@ -139,23 +164,47 @@ def update_database():
             return
 
         # 5. Recheck and update all results in model_test_results
-        placeholders = ','.join('?' for _ in model_test_ids)
-        cursor.execute(f"SELECT model_test_id, complete_response FROM model_test_results WHERE model_test_id IN ({placeholders})", model_test_ids)
+        placeholders = ",".join("?" for _ in model_test_ids)
+        cursor.execute(
+            f"SELECT model_test_id, complete_response FROM model_test_results WHERE model_test_id IN ({placeholders})",
+            model_test_ids,
+        )
 
         updates_to_perform = []
         for model_test_id, complete_response in cursor.fetchall():
-            test_case_id = cursor.execute("SELECT test_case_id FROM model_tests WHERE id = ?", [model_test_id]).fetchone()["test_case_id"]
-            test_case = cursor.execute("select * from test_cases where id = ?", [test_case_id]).fetchone()
-            test_case = TestCase(id=test_case["id"], letter_id=test_case["letter_id"], image_selection=ImageSelection(test_case["image_selection"]), household_id=test_case["household_id"])
-            _, image_ids = get_image_paths_and_ids(test_case.letter_id, test_case.image_selection)
+            test_case_id = cursor.execute(
+                "SELECT test_case_id FROM model_tests WHERE id = ?", [model_test_id]
+            ).fetchone()["test_case_id"]
+            test_case = cursor.execute(
+                "select * from test_cases where id = ?", [test_case_id]
+            ).fetchone()
+            test_case = TestCase(
+                id=test_case["id"],
+                letter_id=test_case["letter_id"],
+                image_selection=ImageSelection(test_case["image_selection"]),
+                household_id=test_case["household_id"],
+            )
+            _, image_ids = get_image_paths_and_ids(
+                test_case.letter_id, test_case.image_selection
+            )
             model_answer_check = check_response(complete_response, test_case, image_ids)
 
             # print(test_case_id, test_case, image_ids, model_answer_check)
-            updates_to_perform.append([model_answer_check.correct_recipient_ids,model_answer_check.correct_image_id , model_answer_check.error_msg, model_test_id ])
+            updates_to_perform.append(
+                [
+                    model_answer_check.correct_recipient_ids,
+                    model_answer_check.correct_image_id,
+                    model_answer_check.error_msg,
+                    model_test_id,
+                ]
+            )
 
         # print(updates_to_perform)
 
-        cursor.executemany("UPDATE model_test_results SET correct_recipient_ids = ?, correct_best_image_id = ?, error_msg = ? WHERE model_test_id = ?", updates_to_perform)
+        cursor.executemany(
+            "UPDATE model_test_results SET correct_recipient_ids = ?, correct_best_image_id = ?, error_msg = ? WHERE model_test_id = ?",
+            updates_to_perform,
+        )
         print(f"{cursor.rowcount} rows updated in model_test_results.")
 
         # Commit the changes and close the connection
@@ -168,5 +217,6 @@ def update_database():
     except Exception as e:
         print(f"An error occurred: {e}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     update_database()

@@ -14,7 +14,9 @@ logger = logging.getLogger(__name__)
 images_base_path = "storage\\uploads"
 
 
-def process_zipfile(images: UploadFile, background_tasks: BackgroundTasks):
+def process_zipfile(
+    images: UploadFile, household_id: int, background_tasks: BackgroundTasks
+):
     if not images.filename or not images.filename.endswith(".zip"):
         raise HTTPException(status_code=400, detail="File must be a zip archive")
     try:
@@ -56,8 +58,8 @@ def process_zipfile(images: UploadFile, background_tasks: BackgroundTasks):
                     status_code=400, detail="No valid file was uploaded"
                 )
 
-            # Correctly add the task to run in the background
-            background_tasks.add_task(process_images, upload_dir)
+            # Add the task to run in the background
+            background_tasks.add_task(process_images, upload_dir, household_id)
 
             return Response(status_code=204)
     except zipfile.BadZipFile:

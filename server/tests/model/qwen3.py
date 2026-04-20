@@ -10,6 +10,7 @@ import logging
 
 logger = logging.getLogger(__file__)
 
+
 def test(
     image_paths: List[str],
     recipients_data: List[CompleteRecipientData],

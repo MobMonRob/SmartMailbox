@@ -20,13 +20,14 @@ SENDER_PASSWORD = "ajmexyaujmrolwxy"
 RECIPIENT_EMAILS = ["mschelkle05@web.de", "jasminfoerstel@gmail.com"]
 DB_PATH = "app/db/database.db"
 
+
 def send_email(subject: str, body: str, err: str = ""):
-    logger.info(f"Sending {"Error" if err else "Result"} email")
+    logger.info(f"Sending {'Error' if err else 'Result'} email")
     msg = EmailMessage()
     msg.set_content(body + err)
-    msg['Subject'] = subject
-    msg['From'] = SENDER_EMAIL
-    msg['To'] = ", ".join(RECIPIENT_EMAILS)
+    msg["Subject"] = subject
+    msg["From"] = SENDER_EMAIL
+    msg["To"] = ", ".join(RECIPIENT_EMAILS)
 
     try:
         if os.path.exists(DB_PATH):
@@ -36,9 +37,9 @@ def send_email(subject: str, body: str, err: str = ""):
 
             msg.add_attachment(
                 zip_buffer.getvalue(),
-                maintype='application',
-                subtype='zip',
-                filename="database.zip"
+                maintype="application",
+                subtype="zip",
+                filename="database.zip",
             )
             logger.info("Database zipped and attached.")
         else:
@@ -48,23 +49,42 @@ def send_email(subject: str, body: str, err: str = ""):
             server.starttls()
             server.login(SENDER_EMAIL, SENDER_PASSWORD)
             server.send_message(msg)
-            logger.info(f"{err if err else "Result" } email sent successfully!")
+            logger.info(f"{err if err else 'Result'} email sent successfully!")
     except Exception as e:
         logger.error(f"Error while sending email: {e}")
 
+
 def main():
-    for model in ["qwen3.5:2b", "qwen3.5:4b", "qwen3.5:9b", "qwen3.5:27b", "qwen3.5:35b", "qwen3.5:122b", "llama3.3:70b", "llama3.2:1b", "llama3.2:3b"]:
+    for model in [
+        "qwen3.5:2b",
+        "qwen3.5:4b",
+        "qwen3.5:9b",
+        "qwen3.5:27b",
+        "qwen3.5:35b",
+        "qwen3.5:122b",
+        "llama3.3:70b",
+        "llama3.2:1b",
+        "llama3.2:3b",
+    ]:
         logger.info(f"Testing model {model}")
         try:
             run_tests(model)
         except Exception as e:
             trace = traceback.format_exc()
-            send_email(f"ERROR: Error while running model test for {model}", f"Error: {e}\n\n" , trace)
+            send_email(
+                f"ERROR: Error while running model test for {model}",
+                f"Error: {e}\n\n",
+                trace,
+            )
             logger.error(f"Error while running model test for {model}: {e}\n{trace}")
             logger.info("Continuing with next model")
             continue
 
-        send_email(f"COMPLETED: Model test completed for {model}", f"Model test completed for {model} without exception.")
+        send_email(
+            f"COMPLETED: Model test completed for {model}",
+            f"Model test completed for {model} without exception.",
+        )
+
 
 if __name__ == "__main__":
     main()

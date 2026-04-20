@@ -2,10 +2,11 @@ import io
 import logging
 import zipfile
 from datetime import time, datetime
-from typing import  List
+from typing import List
 import requests
 
 logger = logging.getLogger(__name__)
+
 
 def send_images_to_server(images: List[io.BytesIO], server_url: str):
     """
@@ -19,11 +20,13 @@ def send_images_to_server(images: List[io.BytesIO], server_url: str):
     archive = create_zip_archive(images)
     archive_name = f"Images_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.zip"
 
-    logger.info(f"Zip archive \"{archive_name}\" created.")
-    logger.info(f"Sending images to server with URL \"{server_url}\".")
+    logger.info(f'Zip archive "{archive_name}" created.')
+    logger.info(f'Sending images to server with URL "{server_url}".')
 
     response = requests.post(server_url, files={"images": (archive_name, archive)})
-    logger.info(f"Server response: {response.status_code, response.reason, response.text}")
+    logger.info(
+        f"Server response: {response.status_code, response.reason, response.text}"
+    )
 
 
 def create_zip_archive(buffers: List[io.BytesIO]) -> io.BytesIO:
@@ -34,7 +37,7 @@ def create_zip_archive(buffers: List[io.BytesIO]) -> io.BytesIO:
     :return: In-memory zip archive.
     """
     archive = io.BytesIO()
-    with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as zip:
+    with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zip:
         for num, buffer in enumerate(buffers):
             image_name = f"image_{num}.jpg"
 

@@ -6,6 +6,7 @@ import time
 
 logger = logging.getLogger(__name__)
 
+
 def take_pictures(count: int = 10, warm_up_time: float = 2) -> List[io.BytesIO]:
     """
     Captures a burst of images directly to in-memory buffers.
@@ -21,10 +22,9 @@ def take_pictures(count: int = 10, warm_up_time: float = 2) -> List[io.BytesIO]:
     picam2.start()
     logger.info("Camera started.")
 
-    image_buffers: List[io.BytesIO] =[]
+    image_buffers: List[io.BytesIO] = []
 
     try:
-
         logger.info(f"Waiting {warm_up_time}s for warm-up...")
         time.sleep(warm_up_time)
 

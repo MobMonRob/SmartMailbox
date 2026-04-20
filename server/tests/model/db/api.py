@@ -8,7 +8,8 @@ from .model import (
     Model,
     ModelFamily,
     TestCase,
-    TestResult, ImageSelection,
+    TestResult,
+    ImageSelection,
 )
 import logging
 
@@ -38,7 +39,9 @@ class Database:
 db = Database()
 
 
-def get_image_path_and_id(letter_id: int, quality: ImageQuality) -> Tuple[str, int] | None:
+def get_image_path_and_id(
+    letter_id: int, quality: ImageQuality
+) -> Tuple[str, int] | None:
     """
     Returns the path of the letter in the specified quality.
 
@@ -47,7 +50,7 @@ def get_image_path_and_id(letter_id: int, quality: ImageQuality) -> Tuple[str, i
 
     :return: The path to the image and its ID or None if the image was not found.
     """
-    image_data =  db.con.execute(
+    image_data = db.con.execute(
         "select image_path, id from images where letter_id = ? and quality = ?",
         [letter_id, quality.value],
     ).fetchone()
@@ -228,7 +231,7 @@ def store_test_result(test_result: TestResult):
             test_result.model_test_id,
             test_result.complete_response,
             test_result.error_msg,
-            test_result.extracted_text
+            test_result.extracted_text,
         ],
     )
     db.con.commit()

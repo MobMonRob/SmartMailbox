@@ -56,11 +56,15 @@ def run_tests(model_name: str, tests: set[int] | None = None):
 
     # filter out unwanted tests
     if tests:
-        test_cases = [test_case for idx, test_case in enumerate(test_cases) if idx in tests]
+        test_cases = [
+            test_case for idx, test_case in enumerate(test_cases) if idx in tests
+        ]
 
     logger.info(f"Running {len(test_cases)} test cases for model {model.name} ...")
     for test_case in test_cases:
-        image_paths, image_ids = get_image_paths_and_ids(test_case.letter_id, test_case.image_selection)
+        image_paths, image_ids = get_image_paths_and_ids(
+            test_case.letter_id, test_case.image_selection
+        )
         result = run_test_case(model, test_case, image_paths)
 
         if not result:
@@ -94,7 +98,9 @@ def run_tests(model_name: str, tests: set[int] | None = None):
     logger.info("DONE")
 
 
-def run_test_case(model: Model, test_case: TestCase, image_paths: List[str]) -> Tuple[ChatResponse, Timings, str] | None:
+def run_test_case(
+    model: Model, test_case: TestCase, image_paths: List[str]
+) -> Tuple[ChatResponse, Timings, str] | None:
     """
     Runs a test case for a given model.
 
@@ -115,7 +121,9 @@ def run_test_case(model: Model, test_case: TestCase, image_paths: List[str]) -> 
             return tesseract_llama.test(image_paths, recipients_data, model.name)
 
 
-def get_image_paths_and_ids(letter_id: int, selection: ImageSelection) -> Tuple[List[str],List[int]]:
+def get_image_paths_and_ids(
+    letter_id: int, selection: ImageSelection
+) -> Tuple[List[str], List[int]]:
     """
     Returns a list of Image paths for the given letter and selection.
 
@@ -138,7 +146,9 @@ def get_image_paths_and_ids(letter_id: int, selection: ImageSelection) -> Tuple[
             paths.append(os.path.abspath(path))
             ids.append(image_id)
         case ImageSelection.SLIGHTLY_BLURRED:
-            path, image_id = get_image_path_and_id(letter_id, ImageQuality.SLIGHTLY_BLURRED.SLIGHTLY_BLURRED)
+            path, image_id = get_image_path_and_id(
+                letter_id, ImageQuality.SLIGHTLY_BLURRED.SLIGHTLY_BLURRED
+            )
             paths.append(os.path.abspath(path))
             ids.append(image_id)
         case ImageSelection.CUT_OFF:
@@ -151,7 +161,7 @@ def get_image_paths_and_ids(letter_id: int, selection: ImageSelection) -> Tuple[
             ids.append(image_id)
 
     logger.info(f"Found {len(paths)} paths and IDs: {paths}, {ids}")
-    return paths,ids
+    return paths, ids
 
 
 def get_recipients_data(household_id: int) -> List[CompleteRecipientData]:
@@ -170,7 +180,9 @@ def get_recipients_data(household_id: int) -> List[CompleteRecipientData]:
     ]
 
 
-def check_response(model_response: str, test_case: TestCase, image_ids: List[int]) -> ModelAnswerCheck:
+def check_response(
+    model_response: str, test_case: TestCase, image_ids: List[int]
+) -> ModelAnswerCheck:
     """
     Checks the models response against the test case.
 
@@ -206,7 +218,7 @@ def check_response(model_response: str, test_case: TestCase, image_ids: List[int
 
     # Check Image ID
     logger.info("Checking best image ID")
-    image_err = check_image_id(image_ids, test_case,response.best_image_id)
+    image_err = check_image_id(image_ids, test_case, response.best_image_id)
     if image_err:
         err = f"Error at correct image ID check: {image_err}"
         logger.info(err)
@@ -252,7 +264,6 @@ def check_recipient_ids(recipient_ids: List[int], test_case: TestCase) -> str:
     correct_ids = get_solution_recipient_ids(test_case.id)
 
     if len(correct_ids) != len(recipient_ids):
-
         if len(recipient_ids) == 0:
             return f"No recipient IDs provided. Expected {len(correct_ids)} ({correct_ids})"
         else:
@@ -279,7 +290,9 @@ def check_image_id(image_ids: List[int], test_case: TestCase, image_idx: int) ->
     try:
         image_id = image_ids[image_idx]
     except IndexError:
-        return f"Image idx is out of range of image paths: {image_idx} >= {len(image_ids)}"
+        return (
+            f"Image idx is out of range of image paths: {image_idx} >= {len(image_ids)}"
+        )
 
     if test_case.image_selection == ImageSelection.ALL:
         # best image is image quality PERFECT

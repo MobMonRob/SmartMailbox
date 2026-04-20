@@ -1,6 +1,7 @@
 import time
 from typing import List, Tuple
 import ollama
+
 # import pytesseract
 # from PIL import Image, ImageFile
 from ollama import ChatResponse

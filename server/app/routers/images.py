@@ -12,9 +12,11 @@ router = APIRouter(
 
 
 @router.post("/images")
-def upload_images(images: UploadFile, background_tasks: BackgroundTasks):
+def upload_images(
+    images: UploadFile, household_id: int, background_tasks: BackgroundTasks
+):
     """
     Endpoint to receive a zip file containing images.
     Extracts the images and processes them.
     """
-    return process_zipfile(images, background_tasks)
+    return process_zipfile(images, household_id, background_tasks)
