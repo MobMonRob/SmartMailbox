@@ -1,3 +1,5 @@
+import shutil
+
 from urllib3.exceptions import RequestError, ResponseError
 
 from server.app.db.api import get_prompt, get_household
@@ -40,3 +42,10 @@ def process_images(dir_path: str, household_id: int):
         err = f"Error during model response: {err}"
         logger.error(err)
         send_err_email(ProcessedResponse(None, None, err), images, household)
+    finally:
+        shutil.rmtree(
+            dir_path,
+            onexc=lambda _, path, err: logger.error(
+                f"Error while deleting directory {dir_path} at {path}: {err}"
+            ),
+        )
