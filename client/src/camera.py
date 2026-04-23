@@ -3,10 +3,12 @@ from typing import List
 from picamera2 import Picamera2
 import logging
 import time
+from config import cfg
 
 logger = logging.getLogger(__name__)
 
-def take_pictures(count: int = 10, warm_up_time: float = 2) -> List[io.BytesIO]:
+
+def take_pictures(warm_up_time: float = 2) -> List[io.BytesIO]:
     """
     Captures a burst of images directly to in-memory buffers.
 
@@ -21,10 +23,11 @@ def take_pictures(count: int = 10, warm_up_time: float = 2) -> List[io.BytesIO]:
     picam2.start()
     logger.info("Camera started.")
 
-    image_buffers: List[io.BytesIO] =[]
+    image_buffers: List[io.BytesIO] = []
+
+    count = cfg.number_of_images
 
     try:
-
         logger.info(f"Waiting {warm_up_time}s for warm-up...")
         time.sleep(warm_up_time)
 
@@ -33,7 +36,7 @@ def take_pictures(count: int = 10, warm_up_time: float = 2) -> List[io.BytesIO]:
 
         for i in range(count):
             stream = io.BytesIO()
-            picam2.capture_file(stream, format="JPEG")
+            picam2.capture_file(stream, format=cfg.image_format)
 
             stream.seek(0)
             image_buffers.append(stream)

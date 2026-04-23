@@ -1,0 +1,4 @@
+number_of_images = 10
+image_format = "jpeg"
+image_name_prefix = "image"
+archive_name_prefix = "images"
