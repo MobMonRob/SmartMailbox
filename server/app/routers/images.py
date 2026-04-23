@@ -1,13 +1,22 @@
-from fastapi import UploadFile, APIRouter, Depends
-from typing import Annotated
+from fastapi import UploadFile, APIRouter, BackgroundTasks
+import logging
 
-from ..dependencies import get_token
+from ..processing.process_zipfile import process_zipfile
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
-    tags= ["images"],
+    tags=["images"],
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.post("/images")
-async def upload_images(images: UploadFile):
-    return{"filename": images.filename}
+def upload_images(
+    images: UploadFile, household_id: int, background_tasks: BackgroundTasks
+):
+    """
+    Endpoint to receive a zip file containing images.
+    Extracts the images and processes them.
+    """
+    return process_zipfile(images, household_id, background_tasks)

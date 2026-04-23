@@ -1,0 +1,271 @@
+import sqlite3
+import os
+from typing import List, Tuple
+from .model import (
+    Household,
+    Recipient,
+    ImageQuality,
+    Model,
+    ModelFamily,
+    TestCase,
+    TestResult,
+    ImageSelection,
+)
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class Database:
+    _instance = None
+    con: sqlite3.Connection
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            db_path = os.path.join(base_dir, "../../../app/db/database.db")
+
+            cls.con = sqlite3.connect(db_path)
+            cls.con.row_factory = sqlite3.Row
+
+        return cls._instance
+
+    def __del__(self):
+        if self.con:
+            self.con.close()
+
+
+db = Database()
+
+
+def get_image_path_and_id(
+    letter_id: int, quality: ImageQuality
+) -> Tuple[str, int] | None:
+    """
+    Returns the path of the letter in the specified quality.
+
+    :param letter_id: The id of the letter the image belongs to.
+    :param quality: The quality of the image. Valid values are: "PERFECT" | "SLIGHTLY_BLURRED" | "VERY_BLURRED" | "CUT_OFF".
+
+    :return: The path to the image and its ID or None if the image was not found.
+    """
+    image_data = db.con.execute(
+        "select image_path, id from images where letter_id = ? and quality = ?",
+        [letter_id, quality.value],
+    ).fetchone()
+
+    if image_data:
+        return image_data["image_path"], image_data["id"]
+    return None
+
+
+def get_prompt(model_family: ModelFamily) -> str:
+    """
+    Returns the prompt for the model family.
+
+    :param model_family: The model family.
+    :return: The prompt for the model family.
+    """
+    logger.info(f"Getting prompt for model family {model_family.value}")
+    return db.con.execute(
+        "select prompt from prompts where model = ?", [model_family.value]
+    ).fetchone()["prompt"]
+
+
+def get_household(household_id: int) -> Household:
+    """
+    Returns the household with the given id.
+
+    :param household_id: The id of the household.
+    :return: The household data.
+    """
+    logger.info(f"Getting household {household_id}")
+    household = db.con.execute(
+        "select * from households where id = ?", [household_id]
+    ).fetchone()
+
+    return Household(
+        id=household["id"],
+        email=household["email"],
+        country=household["country"],
+        zipcode=household["zipcode"],
+        city=household["city"],
+        street=household["street"],
+        house_number=household["house_number"],
+    )
+
+
+def get_all_recipients(household_id: int) -> List[Recipient]:
+    """
+    Returns all recipients for the given household.
+
+    :param household_id: The id of the household.
+    :return: A list of all the recipients.
+    """
+    logger.info(f"Getting all recipients for household {household_id}")
+    recipients = db.con.execute(
+        "select * from recipients where household = ?", [household_id]
+    ).fetchall()
+
+    return [
+        Recipient(
+            id=recipient["id"],
+            firstname=recipient["firstname"],
+            middlename=recipient["middlename"],
+            surname=recipient["surname"],
+            title=recipient["title"],
+            email=recipient["email"],
+            household=recipient["household"],
+        )
+        for recipient in recipients
+    ]
+
+
+def create_model(model_name: str) -> Model:
+    """
+    Creates a model object from a string.
+    The family is derived from the model name.
+    If the model already exists in the database it is reused,
+    otherwise a new database entry is created.
+
+    :param model_name: The model name.
+    :return: The model object.
+    """
+
+    logger.info("Creating model")
+
+    model = db.con.execute(
+        "select * from models where name = ?", [model_name]
+    ).fetchone()
+
+    if model is None:
+        logger.info("Model not found in DB")
+        lower_name = model_name.lower()
+        if lower_name.startswith("qwen3"):
+            model_family = ModelFamily.Qwen3
+        elif lower_name.startswith("llama"):
+            model_family = ModelFamily.Llama
+        else:
+            raise ValueError(f"Unknown model family: {model_name}")
+
+        logger.info(
+            f"Inserting model {model_name} of family {model_family.value} into DB"
+        )
+
+        cursor = db.con.execute(
+            "insert into models (name, family) values (?,?)",
+            [model_name, model_family.value],
+        )
+        db.con.commit()
+
+        model_id = cursor.lastrowid
+        assert isinstance(model_id, int)
+
+        logger.info(f"Inserted model with id {model_id} successfully")
+        return Model(model_id, model_name, model_family)
+
+    logger.info(f"Found matching model with id {model['id']} in DB")
+    return Model(model["id"], model["name"], ModelFamily(model["family"]))
+
+
+def create_model_test(model: Model, test_case: TestCase) -> int:
+    """
+    Creates and inserts a new model test into the db.
+
+    :param model: The tested model.
+    :param test_case: The used test case.
+    :return: The id of the created test case.
+    """
+    logger.info("Creating model test")
+
+    cursor = db.con.execute(
+        "insert into model_tests (model, test_case_id) values (?,?)",
+        [model.id, test_case.id],
+    )
+    db.con.commit()
+
+    model_test_id = cursor.lastrowid
+    assert isinstance(model_test_id, int)
+    return model_test_id
+
+
+def get_test_cases() -> List[TestCase]:
+    """
+    Returns a list of all test cases.
+
+    :return: list of test cases
+    """
+    logger.info("Getting test cases")
+    test_cases = db.con.execute("select * from test_cases").fetchall()
+
+    logger.info(f"Found {len(test_cases)} test cases")
+
+    return [
+        TestCase(
+            id=test_case["id"],
+            letter_id=test_case["letter_id"],
+            image_selection=ImageSelection(test_case["image_selection"]),
+            household_id=test_case["household_id"],
+        )
+        for test_case in test_cases
+    ]
+
+
+def store_test_result(test_result: TestResult):
+    """
+    Stores a test result in the database.
+
+    :param test_result: The test result to store.
+    """
+    logger.info(f"Storing test result: {test_result}")
+    db.con.execute(
+        "insert into model_test_results (time, tesseract_time, llama_time, match_found, correct_recipient_ids, correct_best_image_id, model_test_id, complete_response, error_msg, extracted_text) values (?,?,?,?,?,?,?,?,?,?)",
+        [
+            test_result.time,
+            test_result.tesseract_time,
+            test_result.llama_time,
+            test_result.match_found,
+            test_result.correct_recipient_ids,
+            test_result.correct_image_id,
+            test_result.model_test_id,
+            test_result.complete_response,
+            test_result.error_msg,
+            test_result.extracted_text,
+        ],
+    )
+    db.con.commit()
+
+
+def get_solution_recipient_ids(test_case_id: int) -> List[int]:
+    """
+    Get all correct recipient ids for a given test case.
+
+    :param test_case_id: the id of the test case
+    :return: a list of recipient ids
+    """
+    logger.info("Getting correct recipient IDs")
+    ids = db.con.execute(
+        "select recipient_id from test_case_solutions_correct_recipients where test_case_id = ?",
+        [test_case_id],
+    ).fetchall()
+
+    logger.info(f"Found {len(ids)} correct recipient ids")
+
+    return [int(recipient_id["recipient_id"]) for recipient_id in ids]
+
+
+def get_image_id(letter_id: int, image_quality: ImageQuality) -> int:
+    """
+    Get the image id for a given letter and image quality.
+
+    :param letter_id: The id of the letter.
+    :param image_quality: The quality of the image.
+    :return: The id of the image.
+    """
+    image_id = db.con.execute(
+        "select id from images where letter_id = ? and quality = ?",
+        [letter_id, image_quality.value],
+    ).fetchone()["id"]
+
+    return int(image_id)

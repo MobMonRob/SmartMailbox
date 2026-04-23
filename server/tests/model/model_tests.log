@@ -1,0 +1,76 @@
+2026-03-16 16:37:58,090 | tests.model.model_tests_framework |     INFO | Running tests ...
+2026-03-16 16:37:58,091 |                tests.model.db.api |     INFO | Creating model
+2026-03-16 16:37:58,092 |                tests.model.db.api |     INFO | Found matching model with id 4 in DB
+2026-03-16 16:37:58,092 | tests.model.model_tests_framework |     INFO | Checking model availability ...
+2026-03-16 16:37:58,099 |                             httpx |     INFO | HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2026-03-16 16:37:58,100 | tests.model.model_tests_framework |     INFO | Model is available
+2026-03-16 16:37:58,101 |                tests.model.db.api |     INFO | Getting test cases
+2026-03-16 16:37:58,102 |                tests.model.db.api |     INFO | Found 450 test cases
+2026-03-16 16:37:58,102 | tests.model.model_tests_framework |     INFO | Running 450 test cases for model qwen3-vl:2b ...
+2026-03-16 16:37:58,103 | tests.model.model_tests_framework |     INFO | Running test case 0
+2026-03-16 16:37:58,103 | tests.model.model_tests_framework |     INFO | Getting image paths for selection ImageSelection.PERFECT
+2026-03-16 16:37:58,103 | tests.model.model_tests_framework |     INFO | Found 1 paths: ['C:\\Programming\\studienarbeit\\SmartMailbox\\server\\tests\\model\\images\\l0_lhp.png']
+2026-03-16 16:37:58,103 | tests.model.model_tests_framework |     INFO | Getting recipients data for household 1
+2026-03-16 16:37:58,103 |                tests.model.db.api |     INFO | Getting household 1
+2026-03-16 16:37:58,104 |                tests.model.db.api |     INFO | Getting all recipients for household 1
+2026-03-16 16:37:58,104 | tests.model.model_tests_framework |     INFO | Running test ...
+2026-03-16 16:37:58,104 |                 tests.model.qwen3 |     INFO | Testing qwen3-vl:2b with images ['C:\\Programming\\studienarbeit\\SmartMailbox\\server\\tests\\model\\images\\l0_lhp.png'] and recipient data [CompleteRecipientData(recipient_id=1, household_id=1, email='marie.walz@gmail.com', firstname='Marie', middlename=None, surname='Walz', title='Frau Dr.', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17'), CompleteRecipientData(recipient_id=2, household_id=1, email='max.walz@web.de', firstname='Max', middlename=None, surname='Walz', title='Herr', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17'), CompleteRecipientData(recipient_id=3, household_id=1, email='marie.walz@gmx.de', firstname='Lisa', middlename=None, surname='Walz', title='Frau', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17'), CompleteRecipientData(recipient_id=4, household_id=1, email='marie.walter@gmx.de', firstname='Maria', middlename=None, surname='Walter', title='Frau', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17'), CompleteRecipientData(recipient_id=5, household_id=1, email='peter.hoffmann@gmx.de', firstname='Peter', middlename=None, surname='Hoffmann', title='Herr', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17')]
+2026-03-16 16:37:58,105 |                tests.model.db.api |     INFO | Getting prompt for model family Qwen3
+2026-03-16 16:37:58,105 |                 tests.model.qwen3 |     INFO | Running qwen3-vl:2b
+2026-03-30 10:29:43,661 | tests.model.model_tests_framework |     INFO | Running tests ...
+2026-03-30 10:29:43,662 |                tests.model.db.api |     INFO | Creating model
+2026-03-30 10:29:43,673 |                tests.model.db.api |     INFO | Model not found in DB
+2026-03-30 10:29:43,674 |                tests.model.db.api |     INFO | Inserting model qwen3.5:2b of family Qwen3 into DB
+2026-03-30 10:29:43,683 |                tests.model.db.api |     INFO | Inserted model with id 10 successfully
+2026-03-30 10:29:43,684 | tests.model.model_tests_framework |     INFO | Checking model availability ...
+2026-03-30 10:29:43,739 |                             httpx |     INFO | HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2026-03-30 10:29:43,743 | tests.model.model_tests_framework |     INFO | Pulling model qwen3.5:2b ...
+2026-03-30 10:31:00,214 |                              root |     INFO | Sending Result email
+2026-03-30 10:31:00,231 |                              root |    ERROR | Error while sending email: [Errno 2] No such file or directory: '../../app/db/database.db'
+2026-03-30 10:31:00,232 | tests.model.model_tests_framework |     INFO | Running tests ...
+2026-03-30 10:31:00,232 |                tests.model.db.api |     INFO | Creating model
+2026-03-30 10:31:00,233 |                tests.model.db.api |     INFO | Found matching model with id 10 in DB
+2026-03-30 10:31:00,234 | tests.model.model_tests_framework |     INFO | Checking model availability ...
+2026-03-30 10:31:00,244 |                             httpx |     INFO | HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2026-03-30 10:31:00,245 | tests.model.model_tests_framework |     INFO | Pulling model qwen3.5:2b ...
+2026-03-30 10:31:33,289 |                              root |     INFO | Sending Result email
+2026-03-30 10:31:33,301 |                              root |    ERROR | Error while sending email: [Errno 2] No such file or directory: './../../app/db/database.db'
+2026-03-30 10:31:33,302 | tests.model.model_tests_framework |     INFO | Running tests ...
+2026-03-30 10:31:33,302 |                tests.model.db.api |     INFO | Creating model
+2026-03-30 10:31:33,303 |                tests.model.db.api |     INFO | Found matching model with id 10 in DB
+2026-03-30 10:31:33,304 | tests.model.model_tests_framework |     INFO | Checking model availability ...
+2026-03-30 10:31:33,314 |                             httpx |     INFO | HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2026-03-30 10:31:33,315 | tests.model.model_tests_framework |     INFO | Pulling model qwen3.5:2b ...
+2026-03-30 10:32:59,094 |                              root |     INFO | Sending Result email
+2026-03-30 10:32:59,855 |                              root |    ERROR | Error while sending email: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials ffacd0b85a97d-43cf257b72dsm17547902f8f.34 - gsmtp')
+2026-03-30 10:32:59,856 | tests.model.model_tests_framework |     INFO | Running tests ...
+2026-03-30 10:32:59,856 |                tests.model.db.api |     INFO | Creating model
+2026-03-30 10:32:59,859 |                tests.model.db.api |     INFO | Found matching model with id 10 in DB
+2026-03-30 10:32:59,860 | tests.model.model_tests_framework |     INFO | Checking model availability ...
+2026-03-30 10:32:59,874 |                             httpx |     INFO | HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2026-03-30 10:32:59,876 | tests.model.model_tests_framework |     INFO | Pulling model qwen3.5:2b ...
+2026-03-30 10:41:03,424 |                              root |     INFO | Sending Result email
+2026-03-30 10:41:05,531 |                              root |     INFO | Result email sent successfully!
+2026-03-30 10:41:05,547 | tests.model.model_tests_framework |     INFO | Running tests ...
+2026-03-30 10:41:05,547 |                tests.model.db.api |     INFO | Creating model
+2026-03-30 10:41:05,550 |                tests.model.db.api |     INFO | Found matching model with id 10 in DB
+2026-03-30 10:41:05,551 | tests.model.model_tests_framework |     INFO | Checking model availability ...
+2026-03-30 10:41:05,563 |                             httpx |     INFO | HTTP Request: GET http://127.0.0.1:11434/api/tags "HTTP/1.1 200 OK"
+2026-03-30 10:41:05,564 | tests.model.model_tests_framework |     INFO | Model is available
+2026-03-30 10:41:05,565 |                tests.model.db.api |     INFO | Getting test cases
+2026-03-30 10:41:05,566 |                tests.model.db.api |     INFO | Found 450 test cases
+2026-03-30 10:41:05,568 | tests.model.model_tests_framework |     INFO | Found 450 test cases
+2026-03-30 10:41:05,568 | tests.model.model_tests_framework |     INFO | Running 450 test cases for model qwen3.5:2b ...
+2026-03-30 10:41:05,569 | tests.model.model_tests_framework |     INFO | Getting image paths for selection ImageSelection.PERFECT
+2026-03-30 10:41:05,569 | tests.model.model_tests_framework |     INFO | Found 1 paths and IDs: ['C:\\Programming\\studienarbeit\\SmartMailbox\\server\\tests\\model\\images\\l0_lhp.png'], [1]
+2026-03-30 10:41:05,570 | tests.model.model_tests_framework |     INFO | Running test case 0
+2026-03-30 10:41:05,570 | tests.model.model_tests_framework |     INFO | Getting recipients data for household 1
+2026-03-30 10:41:05,570 |                tests.model.db.api |     INFO | Getting household 1
+2026-03-30 10:41:05,571 |                tests.model.db.api |     INFO | Getting all recipients for household 1
+2026-03-30 10:41:05,572 | tests.model.model_tests_framework |     INFO | Running test ...
+2026-03-30 10:41:05,572 | C:\Programming\studienarbeit\SmartMailbox\server\tests\model\qwen3.py |     INFO | Testing qwen3.5:2b with images ['C:\\Programming\\studienarbeit\\SmartMailbox\\server\\tests\\model\\images\\l0_lhp.png'] and recipient data [CompleteRecipientData(recipient_id=1, household_id=1, email='marie.walz@gmail.com', firstname='Marie', middlename=None, surname='Walz', title='Frau Dr.', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17'), CompleteRecipientData(recipient_id=2, household_id=1, email='max.walz@web.de', firstname='Max', middlename=None, surname='Walz', title='Herr', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17'), CompleteRecipientData(recipient_id=3, household_id=1, email='marie.walz@gmx.de', firstname='Lisa', middlename=None, surname='Walz', title='Frau', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17'), CompleteRecipientData(recipient_id=4, household_id=1, email='marie.walter@gmx.de', firstname='Maria', middlename=None, surname='Walter', title='Frau', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17'), CompleteRecipientData(recipient_id=5, household_id=1, email='peter.hoffmann@gmx.de', firstname='Peter', middlename=None, surname='Hoffmann', title='Herr', country='Deutschland', zipcode='90419', city='Nürnberg', street='Musterstraße', house_number='17')]
+2026-03-30 10:41:05,573 |                tests.model.db.api |     INFO | Getting prompt for model family Qwen3
+2026-03-30 10:41:05,573 | C:\Programming\studienarbeit\SmartMailbox\server\tests\model\qwen3.py |     INFO | Running qwen3.5:2b
+2026-03-30 10:43:27,432 |                              root |     INFO | Sending Result email
+2026-03-30 10:43:27,467 |                              root |     INFO | Database zipped and attached.
+2026-03-30 10:43:28,992 |                              root |     INFO | Result email sent successfully!

@@ -1,0 +1,91 @@
+id,address,format,writing_style
+0,Frau Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,LETTER,HAND
+1,Frau Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,LETTER,PRINT
+2,Frau Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,LETTER,CURSIVE
+3,Frau Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,POSTCARD,HAND
+4,Frau Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,POSTCARD,PRINT
+5,Frau Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,POSTCARD,CURSIVE
+6,Frau Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,WINDOWED_LETTER,HAND
+7,Frau Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,WINDOWED_LETTER,PRINT
+8,Frau Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,WINDOWED_LETTER,CURSIVE
+9,Dr. Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,LETTER,HAND
+10,Dr. Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,LETTER,PRINT
+11,Dr. Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,LETTER,CURSIVE
+12,Dr. Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,POSTCARD,HAND
+13,Dr. Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,POSTCARD,PRINT
+14,Dr. Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,POSTCARD,CURSIVE
+15,Dr. Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,WINDOWED_LETTER,HAND
+16,Dr. Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,WINDOWED_LETTER,PRINT
+17,Dr. Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,WINDOWED_LETTER,CURSIVE
+18,Olaf Jürgen Schmidt\nGoethestraße 42b\n70176 Stuttgart\nDeutschland,LETTER,HAND
+19,Olaf Jürgen Schmidt\nGoethestraße 42b\n70176 Stuttgart\nDeutschland,LETTER,PRINT
+20,Olaf Jürgen Schmidt\nGoethestraße 42b\n70176 Stuttgart\nDeutschland,LETTER,CURSIVE
+21,Olaf Jürgen Schmidt\nGoethestraße 42b\n70176 Stuttgart\nDeutschland,POSTCARD,HAND
+22,Olaf Jürgen Schmidt\nGoethestraße 42b\n70176 Stuttgart\nDeutschland,POSTCARD,PRINT
+23,Olaf Jürgen Schmidt\nGoethestraße 42b\n70176 Stuttgart\nDeutschland,POSTCARD,CURSIVE
+24,Olaf Jürgen Schmidt\nGoethestraße 42b\n70176 Stuttgart\nDeutschland,WINDOWED_LETTER,HAND
+25,Olaf Jürgen Schmidt\nGoethestraße 42b\n70176 Stuttgart\nDeutschland,WINDOWED_LETTER,PRINT
+26,Olaf Jürgen Schmidt\nGoethestraße 42b\n70176 Stuttgart\nDeutschland,WINDOWED_LETTER,CURSIVE
+27,Tom Lutz\nLindenweg 18/1\n70176 Stuttgart\nDeutschland,LETTER,HAND
+28,Tom Lutz\nLindenweg 18/1\n70176 Stuttgart\nDeutschland,LETTER,PRINT
+29,Tom Lutz\nLindenweg 18/1\n70176 Stuttgart\nDeutschland,LETTER,CURSIVE
+30,Tom Lutz\nLindenweg 18/1\n70176 Stuttgart\nDeutschland,POSTCARD,HAND
+31,Tom Lutz\nLindenweg 18/1\n70176 Stuttgart\nDeutschland,POSTCARD,PRINT
+32,Tom Lutz\nLindenweg 18/1\n70176 Stuttgart\nDeutschland,POSTCARD,CURSIVE
+33,Tom Lutz\nLindenweg 18/1\n70176 Stuttgart\nDeutschland,WINDOWED_LETTER,HAND
+34,Tom Lutz\nLindenweg 18/1\n70176 Stuttgart\nDeutschland,WINDOWED_LETTER,PRINT
+35,Tom Lutz\nLindenweg 18/1\n70176 Stuttgart\nDeutschland,WINDOWED_LETTER,CURSIVE
+36,Fam. Müller\nLindenweg 12\n12345 Beispielstadt\nDeutschland,LETTER,HAND
+37,Fam. Müller\nLindenweg 12\n12345 Beispielstadt\nDeutschland,LETTER,PRINT
+38,Fam. Müller\nLindenweg 12\n12345 Beispielstadt\nDeutschland,LETTER,CURSIVE
+39,Fam. Müller\nLindenweg 12\n12345 Beispielstadt\nDeutschland,POSTCARD,HAND
+40,Fam. Müller\nLindenweg 12\n12345 Beispielstadt\nDeutschland,POSTCARD,PRINT
+41,Fam. Müller\nLindenweg 12\n12345 Beispielstadt\nDeutschland,POSTCARD,CURSIVE
+42,Fam. Müller\nLindenweg 12\n12345 Beispielstadt\nDeutschland,WINDOWED_LETTER,HAND
+43,Fam. Müller\nLindenweg 12\n12345 Beispielstadt\nDeutschland,WINDOWED_LETTER,PRINT
+44,Fam. Müller\nLindenweg 12\n12345 Beispielstadt\nDeutschland,WINDOWED_LETTER,CURSIVE
+45,Max und Anna Schneider\nRosenstraße 8\n54321 Musterhausen\nDeutschland,LETTER,HAND
+46,Max und Anna Schneider\nRosenstraße 8\n54321 Musterhausen\nDeutschland,LETTER,PRINT
+47,Max und Anna Schneider\nRosenstraße 8\n54321 Musterhausen\nDeutschland,LETTER,CURSIVE
+48,Max und Anna Schneider\nRosenstraße 8\n54321 Musterhausen\nDeutschland,POSTCARD,HAND
+49,Max und Anna Schneider\nRosenstraße 8\n54321 Musterhausen\nDeutschland,POSTCARD,PRINT
+50,Max und Anna Schneider\nRosenstraße 8\n54321 Musterhausen\nDeutschland,POSTCARD,CURSIVE
+51,Max und Anna Schneider\nRosenstraße 8\n54321 Musterhausen\nDeutschland,WINDOWED_LETTER,HAND
+52,Max und Anna Schneider\nRosenstraße 8\n54321 Musterhausen\nDeutschland,WINDOWED_LETTER,PRINT
+53,Max und Anna Schneider\nRosenstraße 8\n54321 Musterhausen\nDeutschland,WINDOWED_LETTER,CURSIVE
+54,Laura Becker\nAm Park 27\n67890 Fantasiedorf\nDeutschland,LETTER,HAND
+55,Laura Becker\nAm Park 27\n67890 Fantasiedorf\nDeutschland,LETTER,PRINT
+56,Laura Becker\nAm Park 27\n67890 Fantasiedorf\nDeutschland,LETTER,CURSIVE
+57,Laura Becker\nAm Park 27\n67890 Fantasiedorf\nDeutschland,POSTCARD,HAND
+58,Laura Becker\nAm Park 27\n67890 Fantasiedorf\nDeutschland,POSTCARD,PRINT
+59,Laura Becker\nAm Park 27\n67890 Fantasiedorf\nDeutschland,POSTCARD,CURSIVE
+60,Laura Becker\nAm Park 27\n67890 Fantasiedorf\nDeutschland,WINDOWED_LETTER,HAND
+61,Laura Becker\nAm Park 27\n67890 Fantasiedorf\nDeutschland,WINDOWED_LETTER,PRINT
+62,Laura Becker\nAm Park 27\n67890 Fantasiedorf\nDeutschland,WINDOWED_LETTER,CURSIVE
+63,Marie Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,LETTER,HAND
+64,Marie Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,LETTER,PRINT
+65,Marie Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,LETTER,CURSIVE
+66,Marie Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,POSTCARD,HAND
+67,Marie Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,POSTCARD,PRINT
+68,Marie Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,POSTCARD,CURSIVE
+69,Marie Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,WINDOWED_LETTER,HAND
+70,Marie Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,WINDOWED_LETTER,PRINT
+71,Marie Walz\nMusterstraße 17\n90419 Nürnberg\nDeutschland,WINDOWED_LETTER,CURSIVE
+72,An die Bewohner der\nGoethestraße 42\n70176 Stuttgart\nDeutschland,LETTER,HAND
+73,An die Bewohner der\nGoethestraße 42\n70176 Stuttgart\nDeutschland,LETTER,PRINT
+74,An die Bewohner der\nGoethestraße 42\n70176 Stuttgart\nDeutschland,LETTER,CURSIVE
+75,An die Bewohner der\nGoethestraße 42\n70176 Stuttgart\nDeutschland,POSTCARD,HAND
+76,An die Bewohner der\nGoethestraße 42\n70176 Stuttgart\nDeutschland,POSTCARD,PRINT
+77,An die Bewohner der\nGoethestraße 42\n70176 Stuttgart\nDeutschland,POSTCARD,CURSIVE
+78,An die Bewohner der\nGoethestraße 42\n70176 Stuttgart\nDeutschland,WINDOWED_LETTER,HAND
+79,An die Bewohner der\nGoethestraße 42\n70176 Stuttgart\nDeutschland,WINDOWED_LETTER,PRINT
+80,An die Bewohner der\nGoethestraße 42\n70176 Stuttgart\nDeutschland,WINDOWED_LETTER,CURSIVE
+81,Camille Laurent\n17 Rue des Lilas\n75099 Paris\nFrance,LETTER,HAND
+82,Camille Laurent\n17 Rue des Lilas\n75099 Paris\nFrance,LETTER,PRINT
+83,Camille Laurent\n17 Rue des Lilas\n75099 Paris\nFrance,LETTER,CURSIVE
+84,Camille Laurent\n17 Rue des Lilas\n75099 Paris\nFrance,POSTCARD,HAND
+85,Camille Laurent\n17 Rue des Lilas\n75099 Paris\nFrance,POSTCARD,PRINT
+86,Camille Laurent\n17 Rue des Lilas\n75099 Paris\nFrance,POSTCARD,CURSIVE
+87,Camille Laurent\n17 Rue des Lilas\n75099 Paris\nFrance,WINDOWED_LETTER,HAND
+88,Camille Laurent\n17 Rue des Lilas\n75099 Paris\nFrance,WINDOWED_LETTER,PRINT
+89,Camille Laurent\n17 Rue des Lilas\n75099 Paris\nFrance,WINDOWED_LETTER,CURSIVE
