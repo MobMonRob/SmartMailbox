@@ -1,4 +1,5 @@
 number_of_images = 10
+warm_up_time_in_sec = 2.0
 image_format = "jpeg"
 image_name_prefix = "image"
 archive_name_prefix = "images"

@@ -40,6 +40,7 @@ class Config:
 
     # Default values
     number_of_images = 10
+    warm_up_time_in_sec: float = 2.
     image_format = "jpg"
     image_name_prefix = "capture"
     archive_name_prefix = "images_archive"
@@ -101,6 +102,13 @@ class Config:
             self.images_endpoint_url,
             str,
             lambda x: len(x) > 0
+        )
+        self.warm_up_time_in_sec = _get_config_value(
+            data,
+            "warm_up_time_in_sec",
+            self.warm_up_time_in_sec,
+            float,
+            lambda x: x >= 0
         )
 
 
