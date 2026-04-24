@@ -1,3 +1,4 @@
+import http
 import tomllib
 import logging
 from pathlib import Path
@@ -42,7 +43,8 @@ class Config:
     image_format = "jpg"
     image_name_prefix = "capture"
     archive_name_prefix = "images_archive"
-
+    images_endpoint_url = "http://localhost:8000/images"
+    
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(Config, cls).__new__(cls)
@@ -92,6 +94,13 @@ class Config:
             self.archive_name_prefix,
             str,
             lambda x: len(x) > 0,
+        )
+        self.images_endpoint_url = _get_config_value(
+            data,
+            "images_endpoint_url",
+            self.images_endpoint_url,
+            str,
+            lambda x: len(x) > 0
         )
 
 

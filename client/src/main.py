@@ -1,12 +1,9 @@
 from camera import take_pictures
 import logging
-
+from config import cfg
 from client.src.image_processing import send_images_to_server
 
 logger = logging.getLogger(__name__)
-
-SERVER_URL = "http://localhost:8000/images"
-
 
 def main():
     log_file_name = "SmartMailbox.log"
@@ -23,7 +20,7 @@ def main():
     images_buffers = take_pictures()
 
     if images_buffers:
-        send_images_to_server(images_buffers, SERVER_URL)
+        send_images_to_server(images_buffers, cfg.images_endpoint_url)
     else:
         logger.warning("No images were captured.")
 
