@@ -20,7 +20,8 @@ def send_images_to_server(images: List[io.BytesIO], server_url: str):
 
     archive = create_zip_archive(images)
     archive_name = (
-        f"{cfg.archive_name_prefix}_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.zip"
+        f"{cfg.archive_name_prefix}_{datetime.now()
+        .strftime('%Y-%m-%d_%H:%M:%S')}.zip"
     )
 
     logger.info(f'Zip archive "{archive_name}" created.')
@@ -28,10 +29,11 @@ def send_images_to_server(images: List[io.BytesIO], server_url: str):
 
     response = requests.post(
         server_url, files={"images": (archive_name, archive)}
-    )  # TODO: Maybe change "images" to be configurable, this may need a change on the server side
+    ) 
     logger.info(
-        f"Server response: {response.status_code, response.reason, response.text}"
-    )  # TODO: React to server response
+        f"Server response: {response.status_code, 
+        response.reason, response.text}"
+    )
 
 
 def create_zip_archive(buffers: List[io.BytesIO]) -> io.BytesIO:
@@ -44,7 +46,7 @@ def create_zip_archive(buffers: List[io.BytesIO]) -> io.BytesIO:
     archive = io.BytesIO()
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zip:
         for num, buffer in enumerate(buffers):
-            image_name = f"{cfg.image_name_prefix}_{num}.{cfg.image_format}"
+            image_name = f"{cfg.img_name_prefix}_{num}.{cfg.img_format}"
 
             zip.writestr(image_name, buffer.getvalue())
             logger.info(f"Added {image_name} to archive.")

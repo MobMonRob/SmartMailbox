@@ -1,6 +1,6 @@
 number_of_images = 10
 warm_up_time_in_sec = 2.0
-image_format = "jpeg"
-image_name_prefix = "image"
+img_format = "jpeg"
+img_name_prefix = "image"
 archive_name_prefix = "images"
 images_endpoint_url = "http://localhost:8080/images"

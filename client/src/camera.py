@@ -36,7 +36,7 @@ def take_pictures() -> List[io.BytesIO]:
 
         for i in range(count):
             stream = io.BytesIO()
-            picam2.capture_file(stream, format=cfg.image_format)
+            picam2.capture_file(stream, format=cfg.img_format)
 
             stream.seek(0)
             image_buffers.append(stream)

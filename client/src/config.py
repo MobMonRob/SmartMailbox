@@ -41,8 +41,8 @@ class Config:
     # Default values
     number_of_images = 10
     warm_up_time_in_sec: float = 2.
-    image_format = "jpg"
-    image_name_prefix = "capture"
+    img_format = "jpg"
+    img_name_prefix = "capture"
     archive_name_prefix = "images_archive"
     images_endpoint_url = "http://localhost:8000/images"
     
@@ -75,17 +75,17 @@ class Config:
             int,
             lambda x: x > 0,
         )
-        self.image_format = _get_config_value(
+        self.img_format = _get_config_value(
             data,
-            "image_format",
-            self.image_format,
+            "img_format",
+            self.img_format,
             str,
             lambda x: x.lower() in ["jpeg", "png"],  # jpeg / png / bmp / gif
         )
-        self.image_name_prefix = _get_config_value(
+        self.img_name_prefix = _get_config_value(
             data,
-            "image_name_prefix",
-            self.image_name_prefix,
+            "img_name_prefix",
+            self.img_name_prefix,
             str,
             lambda x: len(x) > 0,
         )
