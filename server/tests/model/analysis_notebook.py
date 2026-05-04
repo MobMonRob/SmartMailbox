@@ -516,9 +516,9 @@ plt.show()
 
 # %%
 # To make the y-axis labels readable, we'll shorten the addresses
-df["short_address"] = df["address"].str.split("\n").str[0]
+df["address"] = df["address"].str.replace("\\n", "\n", regex=False)
 style_df = (
-    df.groupby(["model_name", "short_address"], observed=False)["is_perfect_run"]
+    df.groupby(["model_name", "address"], observed=False)["is_perfect_run"]
     .mean()
     .unstack()
 )
@@ -537,7 +537,15 @@ sns.heatmap(
 plt.title("Performance Matrix: Model vs. Address", fontweight="bold")
 plt.ylabel("Model")
 plt.xlabel("Address")
-plt.xticks(rotation=45, ha="right")
+ax = plt.gca()
+plt.xticks(rotation=0, fontsize=10)
 plt.tight_layout()
+# Offset every other label on the x-axis
+for i, label in enumerate(ax.get_xticklabels()):
+    if i % 2 == 1:
+        label.set_y(label.get_position()[1] - 0.12)
+plt.subplots_adjust(bottom=0.22)
+
+
 plt.savefig("server/tests/model/plots/accuracy_by_address.svg")
 plt.show()
