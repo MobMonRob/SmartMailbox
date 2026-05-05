@@ -100,7 +100,7 @@ df.loc[is_llama, "model_name"] = df.loc[is_llama, "model_name"].astype(str)
 df.loc[is_llama, "model_family"] = "Llama + Tesseract"
 df.loc[is_qwen, "model_family"] = "Qwen"
 
-q_hi = df["total_time"].quantile(0.995)
+q_hi = df["total_time"].quantile(0.999)
 outliers = df[df["total_time"] >= q_hi]
 print(f"Removed {len(outliers)} outliers:")
 print(outliers.to_string())
@@ -113,6 +113,9 @@ ordered_model_names = unique_models["model_name"].tolist()
 df["model_name"] = pd.Categorical(
     df["model_name"], categories=ordered_model_names, ordered=True
 )
+
+FAMILY_ORDER = ["Llama + Tesseract", "Qwen"]
+FAMILY_PALETTE = {"Llama + Tesseract": "#DD8452", "Qwen": "#4C72B0"}
 
 df.head()
 
@@ -135,7 +138,7 @@ agg_df = (
 agg_df = agg_df.sort_values("model_name")
 
 plt.figure(figsize=(10, 6))
-ax = sns.barplot(data=agg_df, x="accuracy", y="model_name", hue="family", dodge=False)
+ax = sns.barplot(data=agg_df, x="accuracy", y="model_name", hue="family", hue_order=FAMILY_ORDER, palette=FAMILY_PALETTE, dodge=False)
 ax.set_title("Overall Accuracy", fontweight="bold")
 ax.set_xlabel("Accuracy")
 ax.set_ylabel("")
@@ -181,12 +184,12 @@ time_df["bar2_llm"] = time_df.apply(
 y_pos = np.arange(len(time_df))
 model_names_str = time_df["model_name"].astype(str).tolist()
 
-ax.barh(y_pos, time_df["bar1_tesseract"], color="#DD8452", label="OCR Time (Tesseract)")
+ax.barh(y_pos, time_df["bar1_tesseract"], color=FAMILY_PALETTE["Llama + Tesseract"], label="OCR Time (Tesseract)")
 ax.barh(
     y_pos,
     time_df["bar2_llm"],
     left=time_df["bar1_tesseract"],
-    color="#4C72B0",
+    color=FAMILY_PALETTE["Qwen"],
     label="LLM/VLM Time (Llama/Qwen)",
 )
 
@@ -213,7 +216,7 @@ plt.show()
 # %%
 plt.figure(figsize=(12, 6))
 sns.boxplot(
-    data=df, x="total_time", y="model_name", hue="model_family", showfliers=True
+    data=df, x="total_time", y="model_name", hue="model_family",hue_order=FAMILY_ORDER, palette=FAMILY_PALETTE, showfliers=True
 )
 plt.title("Inference Time Distribution", fontweight="bold")
 plt.xlabel("Total Time (seconds)")
@@ -330,7 +333,7 @@ plt.show()
 # %%
 plt.figure(figsize=(13, 7))
 sns.scatterplot(
-    data=agg_df, x="avg_time", y="accuracy", hue="family", s=150, style="family"
+    data=agg_df, x="avg_time", y="accuracy", hue="family",hue_order=FAMILY_ORDER, palette=FAMILY_PALETTE, s=150, style="family"
 )
 
 # Annotate points
@@ -373,32 +376,12 @@ llama_ocr_df = (
 if not qwen_df.empty or not llama_ocr_df.empty:
     fig, ax1 = plt.subplots(figsize=(12, 7))
 
-    if not qwen_df.empty:
-        ax1.plot(
-            qwen_df["params"],
-            qwen_df["accuracy"],
-            marker="o",
-            color="#2CA02C",
-            linewidth=2,
-            markersize=10,
-            label="Qwen3.5 (Native VLM)",
-        )
-        for i, row in qwen_df.iterrows():
-            ax1.annotate(
-                f"{row['accuracy']:.1%}",
-                (row["params"], row["accuracy"]),
-                xytext=(0, 10),
-                textcoords="offset points",
-                ha="center",
-                fontsize=10,
-            )
-
     if not llama_ocr_df.empty:
         ax1.plot(
             llama_ocr_df["params"],
             llama_ocr_df["accuracy"],
             marker="s",
-            color="#DD8452",
+            color=FAMILY_PALETTE["Llama + Tesseract"],
             linewidth=2,
             markersize=10,
             label="Llama + Tesseract",
@@ -412,6 +395,28 @@ if not qwen_df.empty or not llama_ocr_df.empty:
                 ha="center",
                 fontsize=10,
             )
+
+    if not qwen_df.empty:
+        ax1.plot(
+            qwen_df["params"],
+            qwen_df["accuracy"],
+            marker="o",
+            color=FAMILY_PALETTE["Qwen"],
+            linewidth=2,
+            markersize=10,
+            label="Qwen",
+        )
+        for i, row in qwen_df.iterrows():
+            ax1.annotate(
+                f"{row['accuracy']:.1%}",
+                (row["params"], row["accuracy"]),
+                xytext=(0, 10),
+                textcoords="offset points",
+                ha="center",
+                fontsize=10,
+            )
+
+
 
     ax1.set_title("Model Scaling", fontweight="bold")
     ax1.set_xlabel("Parameters (Billions) - Log Scale")
@@ -476,6 +481,8 @@ sns.pointplot(
     x="writing_style",
     y="is_perfect_run",
     hue="model_family",
+    hue_order=FAMILY_ORDER,
+    palette=FAMILY_PALETTE,
     dodge=dodge_val,
     markers=plot_markers,
     linestyles=plot_linestyles,
@@ -494,6 +501,8 @@ sns.pointplot(
     x="letter_type",
     y="is_perfect_run",
     hue="model_family",
+    hue_order=FAMILY_ORDER,
+    palette=FAMILY_PALETTE,
     dodge=dodge_val,
     markers=plot_markers,
     linestyles=plot_linestyles,
