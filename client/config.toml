@@ -4,3 +4,4 @@ img_format = "jpeg"
 img_name_prefix = "image"
 archive_name_prefix = "images"
 images_endpoint_url = "http://localhost:8080/images"
+household_id = 0

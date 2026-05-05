@@ -20,7 +20,7 @@ def main():
     images_buffers = take_pictures()
 
     if images_buffers:
-        send_images_to_server(images_buffers, cfg.images_endpoint_url)
+        send_images_to_server(images_buffers, cfg.images_endpoint_url, cfg.household_id)
     else:
         logger.warning("No images were captured.")
 

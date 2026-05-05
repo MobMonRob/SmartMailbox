@@ -9,12 +9,15 @@ from config import cfg
 logger = logging.getLogger(__name__)
 
 
-def send_images_to_server(images: List[io.BytesIO], server_url: str):
+def send_images_to_server(
+    images: List[io.BytesIO], server_url: str, household_id: int
+):
     """
     Sends in-memory images to a server in a zip archive.
 
     :param images: List of images to send.
     :param server_url: Server URL.
+    :param household_id: Household ID.
     """
     logger.info(f"Creating zip archive for {len(images)} images.")
 
@@ -25,14 +28,17 @@ def send_images_to_server(images: List[io.BytesIO], server_url: str):
     )
 
     logger.info(f'Zip archive "{archive_name}" created.')
-    logger.info(f'Sending images to server with URL "{server_url}".')
+    logger.info(
+        f'Sending images to server with URL "{server_url}" for household {household_id}.'
+    )
 
     response = requests.post(
-        server_url, files={"images": (archive_name, archive)}
-    ) 
+        server_url,
+        files={"images": (archive_name, archive)},
+        data={"household_id": household_id},
+    )
     logger.info(
-        f"Server response: {response.status_code, 
-        response.reason, response.text}"
+        f"Server response: {response.status_code, response.reason, response.text}"
     )
 
 

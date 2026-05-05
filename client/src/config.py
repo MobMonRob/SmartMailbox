@@ -10,15 +10,15 @@ logger = logging.getLogger(__name__)
 def _get_config_value(
     data: dict[str, Any],
     key: str,
-    default: str | int,
+    default: str | int | float,
     expected_type: type,
     validator: Callable[[Any], bool],
-) -> int | str:
+) -> int | str | float:
     if key not in data:
         logger.warning(f"Missing configuration key: '{key}'. Using default: {default}.")
         return default
 
-    value: str | int = data[key]
+    value: str | int | float = data[key]
 
     if not isinstance(value, expected_type):
         logger.error(
@@ -31,6 +31,8 @@ def _get_config_value(
             f"Configuration value for '{key}' is invalid: {value}. Using default: {default}."
         )
         return default
+
+    assert isinstance(value, str) or isinstance(value, int) or isinstance(value, float), "Only str, int and float are supported."
 
     return value
 
@@ -45,7 +47,8 @@ class Config:
     img_name_prefix = "capture"
     archive_name_prefix = "images_archive"
     images_endpoint_url = "http://localhost:8000/images"
-    
+    household_id = 0
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(Config, cls).__new__(cls)
@@ -101,14 +104,21 @@ class Config:
             "images_endpoint_url",
             self.images_endpoint_url,
             str,
-            lambda x: len(x) > 0
+            lambda x: len(x) > 0,
         )
         self.warm_up_time_in_sec = _get_config_value(
             data,
             "warm_up_time_in_sec",
             self.warm_up_time_in_sec,
             float,
-            lambda x: x >= 0
+            lambda x: x >= 0,
+        )
+        self.household_id = _get_config_value(
+            data,
+            "household_id",
+            self.household_id,
+            int,
+            lambda x: x > 0,
         )
 
 
