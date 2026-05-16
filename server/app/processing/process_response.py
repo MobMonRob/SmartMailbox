@@ -46,8 +46,8 @@ def process_response(res: ChatResponse, images: list[str], household: Household)
 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587  # Standard port for STARTTLS
-SENDER_EMAIL = "briefkaimusterkai@gmail.com"
-SENDER_PASSWORD = "ajmexyaujmrolwxy"
+SENDER_EMAIL = "TODO"
+SENDER_PASSWORD = "TODO"
 SUBJECT = "You got new mail"
 
 

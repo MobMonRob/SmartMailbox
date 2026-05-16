@@ -15,9 +15,9 @@ logger = logging.getLogger()
 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587  # Standard port for STARTTLS
-SENDER_EMAIL = "briefkaimusterkai@gmail.com"
-SENDER_PASSWORD = "ajmexyaujmrolwxy"
-RECIPIENT_EMAILS = ["mschelkle05@web.de", "jasminfoerstel@gmail.com"]
+SENDER_EMAIL = "TODO"
+SENDER_PASSWORD = "TODO"
+RECIPIENT_EMAILS = []
 DB_PATH = "app/db/database.db"
 
 

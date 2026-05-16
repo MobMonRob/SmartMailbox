@@ -1,0 +1,82 @@
+Metadata-Version: 2.4
+Name: client
+Version: 0.1.0
+Summary: Add your description here
+Requires-Python: >=3.13
+Description-Content-Type: text/markdown
+Requires-Dist: requests>=2.33.1
+Requires-Dist: ty>=0.0.32
+
+# Client
+
+Client-side application for the SmartMailbox project.
+The code runs on a Raspberry Pi capturing images from a connected camera and sends them to the server for processing.
+
+## Setup
+
+This project uses `pyproject.toml` to manage dependencies. 
+You can use either the standard `venv` with `pip` or the faster `uv` tool.
+
+### Using `venv` and `pip`
+
+1.  **Create and activate a virtual environment**:
+    From the `client` directory, run:
+    ```bash
+    # Create the environment
+    python -m venv .venv
+
+    # Activate the environment
+    # On Windows
+    .venv\\Scripts\\activate
+    # On macOS/Linux/Raspberry Pi OS
+    source .venv/bin/activate
+    ```
+
+2.  **Install Dependencies**:
+    With the virtual environment activated, run:
+    ```bash
+    pip install .
+    ```
+
+### Using `uv`
+
+1.  **Create and activate a virtual environment**:
+    From the `client` directory, run:
+    ```bash
+    # Create and activate the environment
+    uv venv
+    
+    # Activate the environment
+    # On Windows
+    .venv\\Scripts\\activate
+    # On macOS/Linux/Raspberry Pi OS
+    source .venv/bin/activate
+    ```
+
+2.  **Install Dependencies**:
+    With the virtual environment activated, run:
+    ```bash
+    uv pip install .
+    ```
+
+## Configuration
+
+Open `config.toml` and adjust the settings as needed:
+*   `number_of_images`: Number of pictures to take.
+*   `warm_up_time_in_sec`: Camera warm-up time.
+*   `images_endpoint_url`: URL of the server's image processing endpoint.
+*   `household_id`: The ID of the household to associate with the images.
+
+## Run
+
+Ensure your virtual environment is activated. You can run the application from the `client` directory.
+
+### Using `python`
+```bash
+python -m src.main
+```
+
+### Using `uv`
+```bash
+uv run python -m src.main
+```
