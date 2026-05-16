@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+src/__init__.py
+src/camera.py
+src/config.py
+src/image_processing.py
+src/main.py
+src/client.egg-info/PKG-INFO
+src/client.egg-info/SOURCES.txt
+src/client.egg-info/dependency_links.txt
+src/client.egg-info/requires.txt
+src/client.egg-info/top_level.txt
