@@ -1,27 +1,76 @@
 # Server
 
-Server code for the thesis.
+Server-side application for the SmartMailbox project. 
+This FastAPI application receives images from the client, processes them to identify mail recipients, and provides feedback.
 
-## Run
+## Setup
 
-### Dev
+This project uses `pyproject.toml` to manage dependencies. 
+You can use either the standard `venv` with `pip` or the faster `uv` tool.
 
-In sever directory run:
-```sh 
+### Using `venv` and `pip`
+
+1.  **Create and activate a virtual environment**:
+    From the `server` directory, run:
+    ```bash
+    # Create the environment
+    python -m venv .venv
+
+    # Activate the environment
+    # On Windows
+    .venv\\Scripts\\activate
+    # On macOS/Linux
+    source .venv/bin/activate
+    ```
+
+2.  **Install Dependencies**:
+    With the virtual environment activated, run:
+    ```bash
+    pip install .
+    ```
+
+### Using `uv`
+
+1.  **Create and activate a virtual environment**:
+    First, install `uv` if you don't have it: `pip install uv`.
+    From the `server` directory, run:
+    ```bash
+    # Create and activate the environment
+    uv venv
+    
+    # Activate the environment
+    # On Windows
+    .venv\\Scripts\\activate
+    # On macOS/Linux
+    source .venv/bin/activate
+    ```
+
+2.  **Install Dependencies**:
+    With the virtual environment activated, run:
+    ```bash
+    uv pip install .
+    ```
+
+## Running the Server
+
+Ensure your virtual environment is activated. 
+You can run the application from the `server` directory.
+
+### For Development (with auto-reload)
+```bash
 uvicorn app.main:app --reload
-OR
+```
+
+### For Production
+```bash
 python -m app.main
 ```
 
-## Image processing
+---
 
-### Input
+## Image Processing
 
-- prompt = "" 
-- images/image_texts = []
-- user_data = [{"name": "", "surname": "", "address": "", "id": 0, }] # TODO : define user data
-
-### Returns
+### Model Response
 
 ```json
 {
@@ -32,40 +81,23 @@ python -m app.main
 }
 ```
 
-#### Definition SUCCESS vs FAIL
+### Definition SUCCESS vs FAIL: Matching Instructions for the LLM
+- A match is valid if you can identify the recipient with reasonable certainty
+- Accept approximate matches if you are confident it refers to the same person (e.g. handwriting ambiguity, abbreviated names, missing middle name, name order swapped, ...)
+- If addressed to a household (e.g. "Familie Schneider"), include ALL recipients sharing that household_id
+- If multiple recipients share the same name and there is no other clue to the correct one, include all of them
+- "best_image_id" must be the 0-based index of the image that showed the address most clearly and completely or is most likely to be useful to a human viewer. Always provide this.
+- "fail_reason" must be empty string "" on success; on failure describe briefly why matching failed
 
-*SUCCESS:*
-- found match
-- found multiple matches
-
-*FAIL:*
-- cannot read text
-- cannot find match for text with certainty > ? % # TODO test certainty level, also configurable
 
 ### Testing
 
-- prompt
-- images
-   - categories (different types of images), different quality
-   - define correct answers
-- user_data
-   - users used for images
-   - similar users not used
-- integration of models
-- test infrastructure
-   - ? number of iterations
-   - save timings (for tesseract get two timings)
-   - save answers
-- 5 images of every mail in ordered quality
-    - 1. llm answer for each image individually (Testing models against each other)
-    - 2. llm answer for all 5 at once (Testing that capabilities do not get worse if low quality images are also part of the input)
-
 #### Run tests
 
-*One model*:
+MODEL_NAME := qwen3.5:2b, etc.\
+TEST_TO_RUN := 1 | -5 | 20- | 34-65 | -6, 23-54, 70, 72-
 
-MODEL_NAME: qwen3.2:2b, etc.
-TEST_TO_RUN: 1 | -5 | 20- | 34-65 | -6, 23-54, 70, 72- 
+*One model*:
 
 ```sh
 tmux new -s modeltests
@@ -103,33 +135,23 @@ image qualities: perfect, slightly blurred, very blurred, cut off
 *Naming convention*: l{letter_id}_{format}_{writing_style}_{quality}.png (e.g. l1_lpp.png, l10_pcv.png)
 - letter_id: int
 - format:
-  - LETTER: l
-  - POSTCARD: p
-  - WINDOWED_LETTER: w
+    - LETTER: l
+    - POSTCARD: p
+    - WINDOWED_LETTER: w
 - writing_style:
-  - PRINT: p
-  - CURSIVE: c
-  - HAND: h
+    - PRINT: p
+    - CURSIVE: c
+    - HAND: h
 - quality:
-  - PERFECT: p
-  - SLIGHTLY_BLURRED: s
-  - VERY_BLURRED: v
-  - CUT_OFF: c
+    - PERFECT: p
+    - SLIGHTLY_BLURRED: s
+    - VERY_BLURRED: v
+    - CUT_OFF: c
 
-cmd: 
-```
+Command to take image on Pi:
+```sh
 rpicam-still -o l0_lhp -e png -t 1500
 ```
-
-#### User Data
-
-- only matching the receiver
-- only not matching the receiver
-- matching multiple receivers (family/multiple recipients)
-- receiver and other person names are somewhat similar
-- receiver and other person names are completely different
-- receiver and other person names are very similar
-- two persons with same name, so there is no correct answer
 
 ## Database
 
@@ -197,7 +219,7 @@ tbd
 - format ("LETTER", "POSTCARD", "WINDOWED_LETTER")
 - writing_style ("HAND", "PRINT", "CURSIVE")
 - address (Text)
- 
+
 ### Images
 - id (Int, key)
 - letter_id (Int, foreign key -> Letters.id)
